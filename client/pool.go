@@ -3,23 +3,23 @@ package client
 import (
 	"fmt"
 	"log"
-	"strings"
 )
 
 type Pool struct {
-	Id      string `mikrotik:".id"`
-	Name    string
-	Ranges  string `mikrotik:"ranges"`
-	Comment string
+	Id       string `mikrotik:".id"`
+	Name     string `mikrotik:"name"`
+	Ranges   string `mikrotik:"ranges"`
+	NextPool string `mikrotik:"next-pool"`
+	Comment  string `mikrotik:"comment"`
 }
 
-func (client Mikrotik) AddPool(name string, ranges string, comment string) (*Pool, error) {
+func (client Mikrotik) AddPool(p *Pool) (*Pool, error) {
 	c, err := client.getMikrotikClient()
 
 	if err != nil {
 		return nil, err
 	}
-	cmd := strings.Split(fmt.Sprintf("/ip/pool/add =name=%s =ranges=%s =comment=%s", name, ranges, comment), " ")
+	cmd := Marshal("/ip/pool/add", p)
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	r, err := c.RunArgs(cmd)
 
@@ -66,7 +66,8 @@ func (client Mikrotik) FindPool(id string) (*Pool, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmd := strings.Split(fmt.Sprintf("/ip/pool/print ?.id=%s", id), " ")
+	cmd := []string{"/ip/pool/print", "?.id=" + id}
+
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	r, err := c.RunArgs(cmd)
 
@@ -95,7 +96,7 @@ func (client Mikrotik) FindPoolByName(name string) (*Pool, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmd := strings.Split(fmt.Sprintf("/ip/pool/print ?name=%s", name), " ")
+	cmd := []string{"/ip/pool/print", "?name=" + name}
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	r, err := c.RunArgs(cmd)
 
@@ -119,14 +120,14 @@ func (client Mikrotik) FindPoolByName(name string) (*Pool, error) {
 	return &pool, nil
 }
 
-func (client Mikrotik) UpdatePool(id, name string, ranges string, comment string) (*Pool, error) {
+func (client Mikrotik) UpdatePool(p *Pool) (*Pool, error) {
 	c, err := client.getMikrotikClient()
 
 	if err != nil {
 		return nil, err
 	}
 
-	cmd := strings.Split(fmt.Sprintf("/ip/pool/set =.id=%s =name=%s =ranges=%s =comment=%s", id, name, ranges, comment), " ")
+	cmd := Marshal("/ip/pool/set", p)
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	_, err = c.RunArgs(cmd)
 
@@ -134,7 +135,7 @@ func (client Mikrotik) UpdatePool(id, name string, ranges string, comment string
 		return nil, err
 	}
 
-	return client.FindPool(id)
+	return client.FindPool(p.Id)
 }
 
 func (client Mikrotik) DeletePool(id string) error {
@@ -144,7 +145,7 @@ func (client Mikrotik) DeletePool(id string) error {
 		return err
 	}
 
-	cmd := strings.Split(fmt.Sprintf("/ip/pool/remove =.id=%s", id), " ")
+	cmd := []string{"/ip/pool/remove", "=.id=" + id}
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
 	_, err = c.RunArgs(cmd)
 	return err

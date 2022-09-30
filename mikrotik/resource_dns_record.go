@@ -1,125 +1,147 @@
 package mikrotik
 
 import (
+	"context"
 	"log"
 
 	"github.com/ddelnano/terraform-provider-mikrotik/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceRecord() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceServerCreate,
-		Read:   resourceServerRead,
-		Update: resourceServerUpdate,
-		Delete: resourceServerDelete,
+		Description: "Creates a DNS record on the MikroTik device.",
+
+		CreateContext: resourceServerCreate,
+		ReadContext:   resourceServerRead,
+		UpdateContext: resourceServerUpdate,
+		DeleteContext: resourceServerDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
-			"name": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"name": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The name of the DNS hostname to be created.",
 			},
-			"address": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"address": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The A record to be returend from the DNS hostname.",
 			},
-			"ttl": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-				Computed: true,
+			"comment": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The comment text associated with the DNS record.",
+			},
+			"ttl": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Computed:    true,
+				Description: "The ttl of the DNS record.",
 			},
 		},
 	}
 }
 
-func resourceServerCreate(d *schema.ResourceData, m interface{}) error {
-	address := d.Get("address").(string)
-	name := d.Get("name").(string)
-	ttl := d.Get("ttl").(int)
+func resourceServerCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	record := prepareDnsRecord(d)
 
-	c := m.(client.Mikrotik)
+	c := m.(*client.Mikrotik)
 
-	record, err := c.AddDnsRecord(name, address, ttl)
+	dnsRecord, err := c.AddDnsRecord(record)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	recordToData(record, d)
-	return nil
+	return recordToData(dnsRecord, d)
 }
 
-func resourceServerRead(d *schema.ResourceData, m interface{}) error {
-	c := m.(client.Mikrotik)
+func resourceServerRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.Mikrotik)
 
 	record, err := c.FindDnsRecord(d.Id())
 
-	// TODO: Ignoring this error can cause all resources to think they
-	// need to be created. We should more appropriately handle this. The
-	// error where the DNS record is not found is not actually an error and
-	// needs to be disambiguated from real failures
-	if err != nil {
+	if _, ok := err.(*client.NotFound); ok {
 		d.SetId("")
 		return nil
 	}
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
-	recordToData(record, d)
-	return nil
+	return recordToData(record, d)
 }
 
-func resourceServerUpdate(d *schema.ResourceData, m interface{}) error {
-	c := m.(client.Mikrotik)
+func resourceServerUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.Mikrotik)
 
-	address := d.Get("address").(string)
-	ttl := d.Get("ttl").(int)
-	name := d.Id()
-
-	record, err := c.FindDnsRecord(name)
+	currentRecord, err := c.FindDnsRecord(d.Id())
+	record := prepareDnsRecord(d)
+	record.Id = currentRecord.Id
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	log.Printf("[DEBUG] About to update dns record with %v", record)
-	err = c.UpdateDnsRecord(record.Id, name, address, ttl)
-
+	dnsRecord, err := c.UpdateDnsRecord(record)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	// TODO: the c.UpdateDnsRecord call should return a
-	// new DnsRecord instead of mutating the current one.
-	record.Address = address
-	recordToData(record, d)
-	return nil
+	return recordToData(dnsRecord, d)
 }
 
-func resourceServerDelete(d *schema.ResourceData, m interface{}) error {
+func resourceServerDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	name := d.Id()
 
-	c := m.(client.Mikrotik)
+	c := m.(*client.Mikrotik)
 
 	record, err := c.FindDnsRecord(name)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	err = c.DeleteDnsRecord(record.Id)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId("")
 	return nil
 }
 
-func recordToData(record *client.DnsRecord, d *schema.ResourceData) error {
+func recordToData(record *client.DnsRecord, d *schema.ResourceData) diag.Diagnostics {
+	values := map[string]interface{}{
+		"name":    record.Name,
+		"address": record.Address,
+		"ttl":     record.Ttl,
+	}
+
 	d.SetId(record.Name)
-	d.Set("numerical_id", record.Id)
-	d.Set("name", record.Name)
-	d.Set("address", record.Address)
-	d.Set("ttl", record.Ttl)
-	return nil
+
+	var diags diag.Diagnostics
+
+	for key, value := range values {
+		if err := d.Set(key, value); err != nil {
+			diags = append(diags, diag.Errorf("failed to set %s: %v", key, err)...)
+		}
+	}
+
+	return diags
+}
+
+func prepareDnsRecord(d *schema.ResourceData) *client.DnsRecord {
+	dnsRecord := new(client.DnsRecord)
+
+	dnsRecord.Name = d.Get("name").(string)
+	dnsRecord.Ttl = d.Get("ttl").(int)
+	dnsRecord.Address = d.Get("address").(string)
+	dnsRecord.Comment = d.Get("comment").(string)
+
+	return dnsRecord
 }

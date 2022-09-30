@@ -5,30 +5,63 @@ import (
 	"testing"
 
 	"github.com/ddelnano/terraform-provider-mikrotik/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/ddelnano/terraform-provider-mikrotik/mikrotik/internal"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-var originalName string = "test-pool"
-var originalRanges string = "172.16.0.1-172.16.0.8,172.16.0.10"
-var updatedName string = "test-pool-updated"
-var updatedRanges string = "172.16.0.11-172.16.0.12"
-var updatedComment string = "updated"
-
 func TestAccMikrotikPool_create(t *testing.T) {
+	name := acctest.RandomWithPrefix("pool-create")
+	ranges := fmt.Sprintf("%s,%s", internal.GetNewIpAddrRange(10), internal.GetNewIpAddr())
+
 	resourceName := "mikrotik_pool.bar"
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckMikrotikPoolDestroy,
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckMikrotikPoolDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPool(),
+				Config: testAccPool(name, ranges),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccPoolExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
-					resource.TestCheckResourceAttr(resourceName, "name", originalName),
-					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
+					resource.TestCheckResourceAttr(resourceName, "ranges", ranges),
+				),
+			},
+		},
+	})
+}
+
+func TestAccMikrotikPool_createNextPool(t *testing.T) {
+	name := acctest.RandomWithPrefix("pool-create")
+	ranges := fmt.Sprintf("%s,%s", internal.GetNewIpAddrRange(10), internal.GetNewIpAddr())
+
+	resourceName := "mikrotik_pool.bar"
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckMikrotikPoolDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccPoolWithNextPool(name, ranges, "next_ip_pool", "next_ip_pool"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccPoolExists(resourceName),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
+					resource.TestCheckResourceAttr(resourceName, "ranges", ranges),
+					resource.TestCheckResourceAttr(resourceName, "next_pool", "next_ip_pool"),
+				),
+			},
+			{
+				Config: testAccPoolWithNextPool(name, ranges, "none", "next_ip_pool"),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccPoolExists(resourceName),
+					resource.TestCheckResourceAttrSet(resourceName, "id"),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
+					resource.TestCheckResourceAttr(resourceName, "ranges", ranges),
+					resource.TestCheckResourceAttr(resourceName, "next_pool", ""),
 				),
 			},
 		},
@@ -36,11 +69,14 @@ func TestAccMikrotikPool_create(t *testing.T) {
 }
 
 func TestAccMikrotikPool_createAndPlanWithNonExistantPool(t *testing.T) {
+	name := acctest.RandomWithPrefix("pool-plan")
+	ranges := fmt.Sprintf("%s,%s", internal.GetNewIpAddrRange(10), internal.GetNewIpAddr())
+
 	resourceName := "mikrotik_pool.bar"
 	removePool := func() {
 
 		c := client.NewClient(client.GetConfigFromEnv())
-		pool, err := c.FindPoolByName(originalName)
+		pool, err := c.FindPoolByName(name)
 		if err != nil {
 			t.Fatalf("Error finding the pool by name: %s", err)
 		}
@@ -49,20 +85,20 @@ func TestAccMikrotikPool_createAndPlanWithNonExistantPool(t *testing.T) {
 			t.Fatalf("Error removing the pool: %s", err)
 		}
 	}
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckMikrotikPoolDestroy,
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckMikrotikPoolDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPool(),
+				Config: testAccPool(name, ranges),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccPoolExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id")),
 			},
 			{
 				PreConfig:          removePool,
-				Config:             testAccPool(),
+				Config:             testAccPool(name, ranges),
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -70,43 +106,49 @@ func TestAccMikrotikPool_createAndPlanWithNonExistantPool(t *testing.T) {
 }
 
 func TestAccMikrotikPool_updatePool(t *testing.T) {
+	name := acctest.RandomWithPrefix("pool-update-1")
+	updatedName := acctest.RandomWithPrefix("pool-update-2")
+	ranges := fmt.Sprintf("%s,%s", internal.GetNewIpAddrRange(10), internal.GetNewIpAddr())
+	updatedRanges := fmt.Sprintf("%s,%s", internal.GetNewIpAddrRange(10), internal.GetNewIpAddr())
+	comment := acctest.RandomWithPrefix("tf-acc-comment")
+
 	resourceName := "mikrotik_pool.bar"
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckMikrotikPoolDestroy,
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckMikrotikPoolDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPool(),
+				Config: testAccPool(name, ranges),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccPoolExists(resourceName),
-					resource.TestCheckResourceAttr(resourceName, "name", originalName),
-					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
+					resource.TestCheckResourceAttr(resourceName, "ranges", ranges),
 				),
 			},
 			{
-				Config: testAccPoolUpdatedName(),
+				Config: testAccPool(updatedName, ranges),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccPoolExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "name", updatedName),
-					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
+					resource.TestCheckResourceAttr(resourceName, "ranges", ranges),
 				),
 			},
 			{
-				Config: testAccPoolUpdatedRanges(),
+				Config: testAccPool(name, updatedRanges),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccPoolExists(resourceName),
-					resource.TestCheckResourceAttr(resourceName, "name", originalName),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
 					resource.TestCheckResourceAttr(resourceName, "ranges", updatedRanges),
 				),
 			},
 			{
-				Config: testAccPoolUpdatedComment(),
+				Config: testAccPoolWithComment(name, ranges, comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccPoolExists(resourceName),
-					resource.TestCheckResourceAttr(resourceName, "name", originalName),
-					resource.TestCheckResourceAttr(resourceName, "ranges", originalRanges),
-					resource.TestCheckResourceAttr(resourceName, "comment", updatedComment),
+					resource.TestCheckResourceAttr(resourceName, "name", name),
+					resource.TestCheckResourceAttr(resourceName, "ranges", ranges),
+					resource.TestCheckResourceAttr(resourceName, "comment", comment),
 				),
 			},
 		},
@@ -114,14 +156,17 @@ func TestAccMikrotikPool_updatePool(t *testing.T) {
 }
 
 func TestAccMikrotikPool_import(t *testing.T) {
+	name := acctest.RandomWithPrefix("pool-import")
+	ranges := fmt.Sprintf("%s,%s", internal.GetNewIpAddrRange(10), internal.GetNewIpAddr())
+
 	resourceName := "mikrotik_pool.bar"
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckMikrotikPoolDestroy,
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckMikrotikPoolDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPool(),
+				Config: testAccPool(name, ranges),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccPoolExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id")),
@@ -135,41 +180,39 @@ func TestAccMikrotikPool_import(t *testing.T) {
 	})
 }
 
-func testAccPool() string {
+func testAccPool(name, ranges string) string {
 	return fmt.Sprintf(`
 resource "mikrotik_pool" "bar" {
     name = "%s"
     ranges = "%s"
 }
-`, originalName, originalRanges)
+`, name, ranges)
 }
 
-func testAccPoolUpdatedName() string {
+func testAccPoolWithNextPool(name, ranges, nextPoolToUse, nextPoolName string) string {
 	return fmt.Sprintf(`
 resource "mikrotik_pool" "bar" {
-    name = "%s"
-    ranges = "%s"
-}
-`, updatedName, originalRanges)
-}
-
-func testAccPoolUpdatedRanges() string {
-	return fmt.Sprintf(`
-resource "mikrotik_pool" "bar" {
-    name = "%s"
-    ranges = "%s"
-}
-`, originalName, updatedRanges)
+    name = %q
+    ranges = %q
+    next_pool = %q
+    depends_on = [mikrotik_pool.next_pool]
 }
 
-func testAccPoolUpdatedComment() string {
+resource "mikrotik_pool" "next_pool" {
+    name = %q
+    ranges = "10.10.10.10-10.10.10.20"
+}
+`, name, ranges, nextPoolToUse, nextPoolName)
+}
+
+func testAccPoolWithComment(name, ranges, comment string) string {
 	return fmt.Sprintf(`
 resource "mikrotik_pool" "bar" {
     name = "%s"
     ranges = "%s"
     comment = "%s"
 }
-`, originalName, originalRanges, updatedComment)
+`, name, ranges, comment)
 }
 
 func testAccPoolExists(resourceName string) resource.TestCheckFunc {

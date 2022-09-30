@@ -1,76 +1,87 @@
 package mikrotik
 
 import (
+	"context"
+	"strconv"
+
 	"github.com/ddelnano/terraform-provider-mikrotik/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceLease() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceLeaseCreate,
-		Read:   resourceLeaseRead,
-		Update: resourceLeaseUpdate,
-		Delete: resourceLeaseDelete,
+		Description: "Creates a DHCP lease on the mikrotik device.",
+
+		CreateContext: resourceLeaseCreate,
+		ReadContext:   resourceLeaseRead,
+		UpdateContext: resourceLeaseUpdate,
+		DeleteContext: resourceLeaseDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
-			"address": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"address": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The IP address of the DHCP lease to be created.",
 			},
-			"macaddress": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+			"macaddress": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The MAC addreess of the DHCP lease to be created.",
 			},
-			"comment": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+			"comment": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The comment of the DHCP lease to be created.",
 			},
-			"hostname": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
+			"hostname": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The hostname of the device",
 			},
-			"blocked": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "false",
+			"blocked": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "false",
+				Description: "Whether to block access for this DHCP client (true|false).",
 			},
-			"dynamic": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+			"dynamic": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Whether the dhcp lease is static or dynamic. Dynamic leases are not guaranteed to continue to be assigned to that specific device. Defaults to false.",
 			},
 		},
 	}
 }
 
-func resourceLeaseCreate(d *schema.ResourceData, m interface{}) error {
-	address := d.Get("address").(string)
-	macaddress := d.Get("macaddress").(string)
-	comment := d.Get("comment").(string)
-	blocked:= d.Get("blocked").(string)
+func resourceLeaseCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	dhcpLease := prepareDhcpLease(d)
 
-	c := m.(client.Mikrotik)
+	c := m.(*client.Mikrotik)
 
-	lease, err := c.AddDhcpLease(address, macaddress, comment, blocked)
+	lease, err := c.AddDhcpLease(dhcpLease)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	leaseToData(lease, d)
-	return nil
+	return leaseToData(lease, d)
 }
 
-func resourceLeaseRead(d *schema.ResourceData, m interface{}) error {
-	c := m.(client.Mikrotik)
+func resourceLeaseRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.Mikrotik)
 
 	lease, err := c.FindDhcpLease(d.Id())
 
-	if err != nil {
+	if _, ok := err.(*client.NotFound); ok {
 		d.SetId("")
 		return nil
+	}
+	if err != nil {
+		return diag.FromErr(err)
 	}
 
 	if lease == nil {
@@ -78,49 +89,70 @@ func resourceLeaseRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 
-	leaseToData(lease, d)
-	return nil
+	return leaseToData(lease, d)
 }
 
-func resourceLeaseUpdate(d *schema.ResourceData, m interface{}) error {
-	c := m.(client.Mikrotik)
+func resourceLeaseUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.Mikrotik)
 
-	macaddress := d.Get("macaddress").(string)
-	address := d.Get("address").(string)
-	comment := d.Get("comment").(string)
-	blocked:= d.Get("blocked").(string)
-	dynamic := d.Get("dynamic").(bool)
+	dhcpLease := prepareDhcpLease(d)
+	dhcpLease.Id = d.Id()
 
-	lease, err := c.UpdateDhcpLease(d.Id(), address, macaddress, comment, blocked, dynamic)
+	lease, err := c.UpdateDhcpLease(dhcpLease)
+	lease.Dynamic = dhcpLease.Dynamic
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	leaseToData(lease, d)
-	return nil
+	return leaseToData(lease, d)
 }
 
-func resourceLeaseDelete(d *schema.ResourceData, m interface{}) error {
-	c := m.(client.Mikrotik)
+func resourceLeaseDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	c := m.(*client.Mikrotik)
 
 	err := c.DeleteDhcpLease(d.Id())
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId("")
 	return nil
 }
 
-func leaseToData(lease *client.DhcpLease, d *schema.ResourceData) error {
+func leaseToData(lease *client.DhcpLease, d *schema.ResourceData) diag.Diagnostics {
+	values := map[string]interface{}{
+		"blocked":    strconv.FormatBool(lease.BlockAccess),
+		"comment":    lease.Comment,
+		"address":    lease.Address,
+		"macaddress": lease.MacAddress,
+		"hostname":   lease.Hostname,
+		"dynamic":    lease.Dynamic,
+	}
+
 	d.SetId(lease.Id)
-	d.Set("blocked", lease.BlockAccess)
-	d.Set("comment", lease.Comment)
-	d.Set("address", lease.Address)
-	d.Set("macaddress", lease.MacAddress)
-	d.Set("hostname", lease.Hostname)
-	d.Set("dynamic", lease.Dynamic)
-	return nil
+
+	var diags diag.Diagnostics
+
+	for key, value := range values {
+		if err := d.Set(key, value); err != nil {
+			diags = append(diags, diag.Errorf("failed to set %s: %v", key, err)...)
+		}
+	}
+
+	return diags
+}
+
+func prepareDhcpLease(d *schema.ResourceData) *client.DhcpLease {
+	lease := new(client.DhcpLease)
+
+	lease.BlockAccess, _ = strconv.ParseBool(d.Get("blocked").(string))
+	lease.Comment = d.Get("comment").(string)
+	lease.Address = d.Get("address").(string)
+	lease.MacAddress = d.Get("macaddress").(string)
+	lease.Hostname = d.Get("hostname").(string)
+	lease.Dynamic = d.Get("dynamic").(bool)
+
+	return lease
 }

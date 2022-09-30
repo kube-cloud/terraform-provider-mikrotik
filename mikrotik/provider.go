@@ -1,45 +1,65 @@
 package mikrotik
 
 import (
-	"github.com/ddelnano/terraform-provider-mikrotik/client"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"context"
+	"fmt"
+	"strings"
+
+	mt "github.com/ddelnano/terraform-provider-mikrotik/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func Provider() terraform.ResourceProvider {
-	return &schema.Provider{
+func init() {
+	schema.SchemaDescriptionBuilder = func(s *schema.Schema) string {
+		desc := s.Description
+		// add default value in description, if it was declared in the resource's schema.
+		if s.Default != nil {
+			if s.Default == "" {
+				desc += " Default: `\"\"`."
+			} else {
+				desc += fmt.Sprintf(" Default: `%v`.", s.Default)
+			}
+		}
+
+		return strings.TrimSpace(desc)
+	}
+}
+
+func Provider(client *mt.Mikrotik) *schema.Provider {
+	provider := &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"host": &schema.Schema{
+			"host": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_HOST", nil),
-				Description: "Hostname of the mikrotik router",
+				Description: "Hostname of the MikroTik router",
 			},
-			"username": &schema.Schema{
+			"username": {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_USER", nil),
-				Description: "User account for mikrotik api.",
+				Description: "User account for MikroTik api",
 			},
-			"password": &schema.Schema{
+			"password": {
 				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_PASSWORD", nil),
-				Description: "Password for mikrotik api",
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_PASSWORD", ""),
+				Description: "Password for MikroTik api",
 			},
-			"tls": &schema.Schema{
+			"tls": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_TLS", false),
 				Description: "Whether to use TLS when connecting to MikroTik or not",
 			},
-			"ca_certificate": &schema.Schema{
+			"ca_certificate": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_CA_CERTIFICATE", ""),
 				Description: "Path to MikroTik's certificate authority",
 			},
-			"insecure": &schema.Schema{
+			"insecure": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_INSECURE", false),
@@ -47,30 +67,41 @@ func Provider() terraform.ResourceProvider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"mikrotik_dns_record":   resourceRecord(),
-			"mikrotik_dhcp_lease":   resourceLease(),
-			"mikrotik_scheduler":    resourceScheduler(),
-			"mikrotik_script":       resourceScript(),
-			"mikrotik_pool":         resourcePool(),
-			"mikrotik_bgp_instance": resourceBgpInstance(),
+			"mikrotik_bgp_instance":          resourceBgpInstance(),
+			"mikrotik_bgp_peer":              resourceBgpPeer(),
+			"mikrotik_dhcp_lease":            resourceLease(),
+			"mikrotik_dhcp_server_network":   resourceDhcpServerNetwork(),
+			"mikrotik_dhcp_server":           resourceDhcpServer(),
+			"mikrotik_dns_record":            resourceRecord(),
+			"mikrotik_interface_list_member": resourceInterfaceListMember(),
+			"mikrotik_interface_list":        resourceInterfaceList(),
+			"mikrotik_ip_address":            resourceIpAddress(),
+			"mikrotik_ipv6_address":          resourceIpv6Address(),
+			"mikrotik_pool":                  resourcePool(),
+			"mikrotik_scheduler":             resourceScheduler(),
+			"mikrotik_script":                resourceScript(),
+			"mikrotik_vlan_interface":        resourceVlanInterface(),
 		},
-		ConfigureFunc: mikrotikConfigure,
 	}
+
+	provider.ConfigureContextFunc = func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		if client != nil {
+			return client, nil
+		}
+
+		address := d.Get("host").(string)
+		username := d.Get("username").(string)
+		password := d.Get("password").(string)
+		tls := d.Get("tls").(bool)
+		caCertificate := d.Get("ca_certificate").(string)
+		insecure := d.Get("insecure").(bool)
+
+		return mt.NewClient(address, username, password, tls, caCertificate, insecure), nil
+	}
+
+	return provider
 }
 
-func mikrotikConfigure(d *schema.ResourceData) (c interface{}, err error) {
-	address := d.Get("host").(string)
-	username := d.Get("username").(string)
-	password := d.Get("password").(string)
-	tls := d.Get("tls").(bool)
-	caCertificate := d.Get("ca_certificate").(string)
-	insecure := d.Get("insecure").(bool)
-	c = client.NewClient(address, username, password, tls, caCertificate, insecure)
-	return
-}
-
-type mikrotikConn struct {
-	host     string
-	username string
-	password string
+func NewProvider() *schema.Provider {
+	return Provider(nil)
 }
