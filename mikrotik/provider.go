@@ -19,7 +19,7 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeString,
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("MIKROTIK_USER", nil),
-				Description: "User account for mikrotik api",
+				Description: "User account for mikrotik api.",
 			},
 			"password": &schema.Schema{
 				Type:        schema.TypeString,
