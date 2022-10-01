@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/ddelnano/terraform-provider-mikrotik/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
 var instanceName string = "default"

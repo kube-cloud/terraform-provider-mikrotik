@@ -14,6 +14,7 @@ type VlanInterface struct {
 	Disabled      bool   `mikrotik:"disabled"`
 	UseServiceTag bool   `mikrotik:"use-service-tag"`
 	VlanId        int    `mikrotik:"vlan-id"`
+	Comment       string `mikrotik:"comment"`
 }
 
 func (client Mikrotik) AddVlanInterface(d *VlanInterface) (*VlanInterface, error) {

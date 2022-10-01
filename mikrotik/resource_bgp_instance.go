@@ -3,9 +3,9 @@ package mikrotik
 import (
 	"context"
 
-	"github.com/ddelnano/terraform-provider-mikrotik/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
 func resourceBgpInstance() *schema.Resource {
@@ -95,8 +95,8 @@ func resourceBgpInstance() *schema.Resource {
 				Description: " If enabled, the router will redistribute the information about static routes added to its routing database.",
 			},
 			"router_id": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
 				Description: " 	BGP Router ID (for this instance). If set to 0.0.0.0, BGP will use one of router's IP addresses.",
 			},
 			"routing_table": {
@@ -106,8 +106,8 @@ func resourceBgpInstance() *schema.Resource {
 				Description: "Name of routing table this BGP instance operates on. ",
 			},
 			"cluster_id": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
 				Description: " 	In case this instance is a route reflector: cluster ID of the router reflector cluster this instance belongs to.",
 			},
 			"confederation": {

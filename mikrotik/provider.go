@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	mt "github.com/ddelnano/terraform-provider-mikrotik/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	mt "github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
 func init() {
@@ -81,6 +81,7 @@ func Provider(client *mt.Mikrotik) *schema.Provider {
 			"mikrotik_scheduler":             resourceScheduler(),
 			"mikrotik_script":                resourceScript(),
 			"mikrotik_vlan_interface":        resourceVlanInterface(),
+			"mikrotik_bridge_interface":      resourceBridgeInterface(),
 		},
 	}
 
