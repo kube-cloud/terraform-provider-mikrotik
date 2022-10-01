@@ -46,7 +46,7 @@ func resourceBridgeInterface() *schema.Resource {
 				Description: "Bridge Interface MAC Auto Selection Flag.",
 			},
 			"admin_mac": {
-				Type:        schema.TypeInt,
+				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "",
 				Description: "Bridge Interface Administration MAC.",
