@@ -17,7 +17,7 @@ func TestBridgeInterface_basic(t *testing.T) {
 	name := "test-brigde"
 	comment := "test-comment"
 	autoMac := false
-	adminMac := "AC:BB:AA:EE:FF"
+	adminMac := "74:4D:28:F3:A7:15"
 	disabled := false
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
