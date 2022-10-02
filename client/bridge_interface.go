@@ -24,6 +24,8 @@ func (client Mikrotik) FindBridgeInterface(name string) (*BridgeInterface, error
 	}
 	cmd := []string{"/interface/bridge/print", "?name=" + name}
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
+	fmt.Println("============RUN BRIDGE REQUEST=============")
+	fmt.Println(cmd)
 	r, err := c.RunArgs(cmd)
 
 	if err != nil {
@@ -31,6 +33,9 @@ func (client Mikrotik) FindBridgeInterface(name string) (*BridgeInterface, error
 	}
 
 	log.Printf("[INFO] Found record: %v", r)
+	fmt.Println("=========================")
+	fmt.Println("=====> RAW RESULT")
+	fmt.Println(r)
 	record := BridgeInterface{}
 	err = Unmarshal(*r, &record)
 
@@ -41,7 +46,11 @@ func (client Mikrotik) FindBridgeInterface(name string) (*BridgeInterface, error
 	if record.Name == "" {
 		return nil, NewNotFound(fmt.Sprintf("Bridge Interface `%s` not found", name))
 	}
-
+	fmt.Println("=========================")
+	fmt.Println("=====> BRIDGE RESULT")
+	fmt.Println(record)
+	fmt.Println("=========================")
+	fmt.Println("=========================")
 	return &record, nil
 }
 
