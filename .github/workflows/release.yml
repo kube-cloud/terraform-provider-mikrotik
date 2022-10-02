@@ -32,9 +32,8 @@ jobs:
       -
         name: Import GPG key
         id: import_gpg
-        # TODO: move this to HashiCorp namespace or find alternative that is just simple gpg commands
-        # see https://github.com/hashicorp/terraform-provider-scaffolding/issues/22
-        uses: crazy-max/ghaction-import-gpg@v5.0.0
+        run: |
+          echo -n "$GPG_PRIVATE_KEY" | gpg --passphrase "$PASSPHRASE" --batch --pinentry-mode=loopback --yes --import
         env:
           # These secrets will need to be configured for the repository:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
