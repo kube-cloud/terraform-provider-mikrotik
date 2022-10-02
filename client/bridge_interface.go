@@ -30,7 +30,7 @@ func (client Mikrotik) FindBridgeInterface(name string) (*BridgeInterface, error
 		return nil, err
 	}
 
-	log.Printf("[DEBUG] Found record: %v", r)
+	log.Printf("[INFO] Found record: %v", r)
 	record := BridgeInterface{}
 	err = Unmarshal(*r, &record)
 
@@ -57,7 +57,7 @@ func (client Mikrotik) AddBridgeInterface(d *BridgeInterface) (*BridgeInterface,
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("[DEBUG] command returned: %v", r)
+	log.Printf("[INFO] command returned: %v", r)
 
 	return client.FindBridgeInterface(d.Name)
 }
@@ -74,7 +74,7 @@ func (client Mikrotik) UpdateBridgeInterface(d *BridgeInterface) (*BridgeInterfa
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("[DEBUG] command returned: %v", r)
+	log.Printf("[INFO] command returned: %v", r)
 
 	return client.FindBridgeInterface(d.Name)
 }
@@ -91,7 +91,7 @@ func (client Mikrotik) DeleteBridgeInterface(name string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("[DEBUG] Command returned: %v", r)
+	log.Printf("[INFO] Command returned: %v", r)
 
 	return nil
 }
