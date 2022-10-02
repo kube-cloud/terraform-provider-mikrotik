@@ -3,9 +3,9 @@ package mikrotik
 import (
 	"context"
 
-	"github.com/ddelnano/terraform-provider-mikrotik/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
 func resourceVlanInterface() *schema.Resource {
@@ -53,6 +53,12 @@ func resourceVlanInterface() *schema.Resource {
 				Type:        schema.TypeInt,
 				Optional:    true,
 				Description: "Virtual LAN identifier or tag that is used to distinguish VLANs. Must be equal for all computers that belong to the same VLAN.",
+			},
+			"comment": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "Virtual LAN Interface Description.",
 			},
 		},
 	}
@@ -116,6 +122,7 @@ func dataToVlanInterface(d *schema.ResourceData) *client.VlanInterface {
 		Disabled:      d.Get("disabled").(bool),
 		UseServiceTag: d.Get("use_service_tag").(bool),
 		VlanId:        d.Get("vlan_id").(int),
+		Comment:       d.Get("comment").(string),
 	}
 }
 
@@ -143,6 +150,10 @@ func recordVlanInterfaceToData(r *client.VlanInterface, d *schema.ResourceData) 
 	}
 
 	if err := d.Set("vlan_id", r.VlanId); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+
+	if err := d.Set("comment", r.Comment); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
 

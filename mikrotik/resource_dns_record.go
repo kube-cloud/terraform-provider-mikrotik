@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/ddelnano/terraform-provider-mikrotik/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
 func resourceRecord() *schema.Resource {

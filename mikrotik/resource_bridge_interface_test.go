@@ -10,44 +10,43 @@ import (
 	"github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
-func TestVlanInterface_basic(t *testing.T) {
+func TestBridgeInterface_basic(t *testing.T) {
 
-	resourceName := "mikrotik_vlan_interface.testacc"
-	iface := "ether1"
+	resourceName := "mikrotik_bridge_interface.testacc"
 	mtu := 1500
-	name := "test-vlan"
-	useServiceTag := false
-	vlanID := 20
+	name := "test-brigde"
+	comment := "test-comment"
+	autoMac := false
+	adminMac := "74:4D:28:F3:A7:15"
+	disabled := false
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckVlanInterfaceDestroy,
+		CheckDestroy:      testAccCheckBridgeInterfaceDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVlanInterface(iface, mtu, name, useServiceTag, vlanID),
+				Config: testAccBridgeInterface(mtu, name, disabled, autoMac, adminMac, comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccVlanInterfaceExists(resourceName),
+					testAccBridgeInterfaceExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", name),
 					resource.TestCheckResourceAttr(resourceName, "mtu", strconv.Itoa(mtu)),
-					resource.TestCheckResourceAttr(resourceName, "vlan_id", strconv.Itoa(vlanID)),
 				),
 			},
 			{
-				Config: testAccVlanInterface(iface, mtu, name+"updated", useServiceTag, vlanID+1),
+				Config: testAccBridgeInterface(mtu, name+"updated", disabled, autoMac, adminMac, comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccVlanInterfaceExists(resourceName),
+					testAccBridgeInterfaceExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", name+"updated"),
 					resource.TestCheckResourceAttr(resourceName, "mtu", strconv.Itoa(mtu)),
-					resource.TestCheckResourceAttr(resourceName, "vlan_id", strconv.Itoa(vlanID+1)),
 				),
 			},
 		},
 	})
 }
 
-func testAccVlanInterfaceExists(resourceName string) resource.TestCheckFunc {
+func testAccBridgeInterfaceExists(resourceName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -59,7 +58,7 @@ func testAccVlanInterfaceExists(resourceName string) resource.TestCheckFunc {
 		}
 
 		c := client.NewClient(client.GetConfigFromEnv())
-		record, err := c.FindVlanInterface(rs.Primary.ID)
+		record, err := c.FindBridgeInterface(rs.Primary.ID)
 		if err != nil {
 			return fmt.Errorf("Unable to get remote record for %s: %v", resourceName, err)
 		}
@@ -67,19 +66,18 @@ func testAccVlanInterfaceExists(resourceName string) resource.TestCheckFunc {
 		if record == nil {
 			return fmt.Errorf("Unable to get the remote record %s", resourceName)
 		}
-
 		return nil
 	}
 }
 
-func testAccCheckVlanInterfaceDestroy(s *terraform.State) error {
+func testAccCheckBridgeInterfaceDestroy(s *terraform.State) error {
 	c := client.NewClient(client.GetConfigFromEnv())
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "mikrotik_vlan_interface" {
+		if rs.Type != "mikrotik_bridge_interface" {
 			continue
 		}
 
-		remoteRecord, err := c.FindVlanInterface(rs.Primary.ID)
+		remoteRecord, err := c.FindBridgeInterface(rs.Primary.ID)
 
 		_, ok := err.(*client.NotFound)
 		if !ok && err != nil {
@@ -94,14 +92,15 @@ func testAccCheckVlanInterfaceDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccVlanInterface(iface string, mtu int, name string, useServiceTag bool, vlanID int) string {
+func testAccBridgeInterface(mtu int, name string, disabled bool, autoMac bool, adminMac string, comment string) string {
 	return fmt.Sprintf(`
-		resource "mikrotik_vlan_interface" "testacc" {
-			interface = %q
+		resource "mikrotik_bridge_interface" "testacc" {
 			mtu = %d
 			name = %q
-			use_service_tag = %t
-			vlan_id = %d
+			disabled = %t
+			auto_mac = %t
+			admin_mac = %q
+			comment = %q
 		}
-	`, iface, mtu, name, useServiceTag, vlanID)
+	`, mtu, name, disabled, autoMac, adminMac, comment)
 }

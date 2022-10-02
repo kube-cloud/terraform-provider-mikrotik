@@ -1,4 +1,4 @@
-module github.com/ddelnano/terraform-provider-mikrotik/client
+module github.com/kube-cloud/terraform-provider-mikrotik/client
 
 go 1.17
 
