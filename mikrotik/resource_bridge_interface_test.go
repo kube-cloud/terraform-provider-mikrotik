@@ -66,14 +66,6 @@ func testAccBridgeInterfaceExists(resourceName string) resource.TestCheckFunc {
 		if record == nil {
 			return fmt.Errorf("Unable to get the remote record %s", resourceName)
 		}
-
-		fmt.Println("=========================")
-		fmt.Println("=========================")
-		fmt.Println("=====> LOADED RESOURCES :")
-		fmt.Println(record)
-		fmt.Println("=========================")
-		fmt.Println("=========================")
-
 		return nil
 	}
 }
