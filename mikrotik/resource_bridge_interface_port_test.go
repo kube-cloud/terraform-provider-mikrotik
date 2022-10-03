@@ -19,7 +19,7 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 	bridge_adminMac := "74:4D:28:F3:A7:16"
 	bridge_disabled := false
 
-	resourceName := "mikrotik_bridge_interface_port.testacc"
+	resourceName := "mikrotik_bridge_interface_port.testaccport"
 	iface := "ether1"
 	bridge := bridge_name
 	horizon := "none"
@@ -152,9 +152,9 @@ func testAccBridgeInterfacePort(iface string, bridge string, horizon string, lea
 			admin_mac = %q
 			comment = %q
 		}
-		resource "mikrotik_bridge_interface_port" "testacc" {
+		resource "mikrotik_bridge_interface_port" "testaccport" {
 			interface = %q
-			bridge = %q
+			bridge = mikrotik_bridge_interface.testacc.name
 			horizon = %q
 			learn = %q
 			unknown_multicast_flood = %t
@@ -175,7 +175,7 @@ func testAccBridgeInterfacePort(iface string, bridge string, horizon string, lea
 			comment = %q
 		}
 	`, bridge_mtu, bridge_name, bridge_disabled, bridge_autoMac, bridge_adminMac, bridge_comment,
-		iface, bridge, horizon, learn, unknown_multicast_flood,
+		iface, horizon, learn, unknown_multicast_flood,
 		unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 		auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
 		path_cost, internal_path_cost, edge, point_to_point, disabled, comment)
