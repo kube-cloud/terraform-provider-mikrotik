@@ -151,7 +151,7 @@ func testAccBridgeInterfacePort(iface string, bridge string, horizon string, lea
 		}
 		resource "mikrotik_bridge_interface_port" "testaccport" {
 			interface = %q
-			bridge = %q
+			bridge = mikrotik_bridge_interface.testacc.name
 			horizon = %q
 			learn = %q
 			unknown_multicast_flood = %t
