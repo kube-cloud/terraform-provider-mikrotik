@@ -3,10 +3,11 @@ package mikrotik
 import (
 	"context"
 
+	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/kube-cloud/terraform-provider-mikrotik/client",
-	"fmt"
+	"github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
 func resourceBridgeInterfacePort() *schema.Resource {
