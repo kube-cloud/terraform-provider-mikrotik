@@ -39,7 +39,7 @@ func TestBridgeInterface_basic(t *testing.T) {
 		CheckDestroy:      testAccCheckBridgeInterfaceDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccBridgeInterface(iface, bridge, horizon, learn, unknown_multicast_flood,
+				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
 					path_cost, internal_path_cost, edge, point_to_point, disabled, comment),
@@ -59,7 +59,7 @@ func TestBridgeInterface_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccBridgeInterface(iface, bridge, horizon, learn, unknown_multicast_flood,
+				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
 					path_cost+5, internal_path_cost+10, edge, point_to_point, disabled, comment),
@@ -128,7 +128,7 @@ func testAccCheckBridgeInterfaceDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccBridgeInterface(iface string, bridge string, horizon string, learn string,
+func testAccBridgeInterfacePort(iface string, bridge string, horizon string, learn string,
 	unknown_multicast_flood bool, unknown_unicast_flood bool, broadcast_flood bool, trusted bool,
 	hardware_offload bool, auto_isolate bool, restricted_role bool, restricted_tcn bool, bpdu_guard bool,
 	priority bool, path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool, comment string) string {
