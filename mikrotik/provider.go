@@ -82,6 +82,7 @@ func Provider(client *mt.Mikrotik) *schema.Provider {
 			"mikrotik_script":                resourceScript(),
 			"mikrotik_vlan_interface":        resourceVlanInterface(),
 			"mikrotik_bridge_interface":      resourceBridgeInterface(),
+			"mikrotik_bridge_interface_port": resourceBridgeInterfacePort(),
 		},
 	}
 
