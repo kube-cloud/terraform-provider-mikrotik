@@ -3,8 +3,6 @@ package mikrotik
 import (
 	"context"
 
-	"fmt"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/kube-cloud/terraform-provider-mikrotik/client"
@@ -103,8 +101,8 @@ func resourceBridgeInterfacePort() *schema.Resource {
 			"priority": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Default:     80,
-				Description: "Bridge Port Priority.",
+				Default:     0x80,
+				Description: "Bridge Port Priority (In Hexadecimal).",
 			},
 			"path_cost": {
 				Type:        schema.TypeInt,
@@ -157,24 +155,14 @@ func resourceBridgeInterfacePortRead(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceBridgeInterfacePortCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	fmt.Println("====================")
-	fmt.Println("====================")
-	fmt.Println(d)
-	fmt.Println("====================")
+	fmt
 	c := m.(*client.Mikrotik)
 	r := dataToBridgeInterfacePort(d)
-	fmt.Println(r)
-	fmt.Println("====================")
 	record, err := c.AddBridgeInterfacePort(r)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	fmt.Println(record)
-	fmt.Println("====================")
 	d.SetId(record.Interface)
-
-	fmt.Println("====================")
-	fmt.Println("====================")
 
 	return resourceBridgeInterfacePortRead(ctx, d, m)
 }
