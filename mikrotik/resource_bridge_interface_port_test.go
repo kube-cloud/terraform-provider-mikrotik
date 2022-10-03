@@ -10,7 +10,7 @@ import (
 	"github.com/kube-cloud/terraform-provider-mikrotik/client"
 )
 
-func TestBridgeInterface_basic(t *testing.T) {
+func TestBridgeInterfacePort_basic(t *testing.T) {
 
 	resourceName := "mikrotik_bridge_interface_port.testacc"
 	iface := "ether1"
