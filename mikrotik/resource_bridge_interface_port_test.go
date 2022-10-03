@@ -45,7 +45,7 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 		CheckDestroy:      testAccCheckBridgeInterfacePortDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
+				Config: testAccBridgeInterfacePort(iface, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard,
 					path_cost, internal_path_cost, edge, point_to_point, disabled, comment,
@@ -54,7 +54,7 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 					testAccBridgeInterfacePortExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "interface", iface),
-					resource.TestCheckResourceAttr(resourceName, "bridge", bridge),
+					resource.TestCheckResourceAttr(resourceName, "bridge", bridge_name),
 					resource.TestCheckResourceAttr(resourceName, "horizon", horizon),
 					resource.TestCheckResourceAttr(resourceName, "learn", learn),
 					resource.TestCheckResourceAttr(resourceName, "edge", edge),
@@ -65,7 +65,7 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
+				Config: testAccBridgeInterfacePort(iface, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard,
 					path_cost+5, internal_path_cost+10, edge, point_to_point, disabled, comment,
@@ -74,7 +74,7 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 					testAccBridgeInterfacePortExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "interface", iface),
-					resource.TestCheckResourceAttr(resourceName, "bridge", bridge),
+					resource.TestCheckResourceAttr(resourceName, "bridge", bridge_name),
 					resource.TestCheckResourceAttr(resourceName, "horizon", horizon),
 					resource.TestCheckResourceAttr(resourceName, "learn", learn),
 					resource.TestCheckResourceAttr(resourceName, "edge", edge),
@@ -134,7 +134,7 @@ func testAccCheckBridgeInterfacePortDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccBridgeInterfacePort(iface string, bridge string, horizon string, learn string,
+func testAccBridgeInterfacePort(iface string, horizon string, learn string,
 	unknown_multicast_flood bool, unknown_unicast_flood bool, broadcast_flood bool, trusted bool,
 	hardware_offload bool, auto_isolate bool, restricted_role bool, restricted_tcn bool, bpdu_guard bool,
 	path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool,
