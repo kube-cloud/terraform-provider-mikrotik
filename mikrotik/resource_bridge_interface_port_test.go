@@ -36,7 +36,7 @@ func TestBridgeInterface_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckBridgeInterfaceDestroy,
+		CheckDestroy:      testAccCheckBridgeInterfacePortDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
@@ -44,7 +44,7 @@ func TestBridgeInterface_basic(t *testing.T) {
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
 					path_cost, internal_path_cost, edge, point_to_point, disabled, comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccBridgeInterfaceExists(resourceName),
+					testAccBridgeInterfacePortExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "iface", iface),
 					resource.TestCheckResourceAttr(resourceName, "bridge", bridge),
@@ -64,7 +64,7 @@ func TestBridgeInterface_basic(t *testing.T) {
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
 					path_cost+5, internal_path_cost+10, edge, point_to_point, disabled, comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccBridgeInterfaceExists(resourceName),
+					testAccBridgeInterfacePortExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "iface", iface),
 					resource.TestCheckResourceAttr(resourceName, "bridge", bridge),
@@ -82,7 +82,7 @@ func TestBridgeInterface_basic(t *testing.T) {
 	})
 }
 
-func testAccBridgeInterfaceExists(resourceName string) resource.TestCheckFunc {
+func testAccBridgeInterfacePortExists(resourceName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
@@ -94,7 +94,7 @@ func testAccBridgeInterfaceExists(resourceName string) resource.TestCheckFunc {
 		}
 
 		c := client.NewClient(client.GetConfigFromEnv())
-		record, err := c.FindBridgeInterface(rs.Primary.ID)
+		record, err := c.FindBridgeInterfacePort(rs.Primary.ID)
 		if err != nil {
 			return fmt.Errorf("Unable to get remote record for %s: %v", resourceName, err)
 		}
@@ -106,14 +106,14 @@ func testAccBridgeInterfaceExists(resourceName string) resource.TestCheckFunc {
 	}
 }
 
-func testAccCheckBridgeInterfaceDestroy(s *terraform.State) error {
+func testAccCheckBridgeInterfacePortDestroy(s *terraform.State) error {
 	c := client.NewClient(client.GetConfigFromEnv())
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "mikrotik_bridge_interface_port" {
 			continue
 		}
 
-		remoteRecord, err := c.FindBridgeInterface(rs.Primary.ID)
+		remoteRecord, err := c.FindBridgeInterfacePort(rs.Primary.ID)
 
 		_, ok := err.(*client.NotFound)
 		if !ok && err != nil {
