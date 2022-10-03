@@ -155,7 +155,7 @@ func resourceBridgeInterfacePortRead(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceBridgeInterfacePortCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	fmt
+
 	c := m.(*client.Mikrotik)
 	r := dataToBridgeInterfacePort(d)
 	record, err := c.AddBridgeInterfacePort(r)
