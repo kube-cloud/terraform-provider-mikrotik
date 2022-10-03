@@ -21,7 +21,6 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 
 	resourceName := "mikrotik_bridge_interface_port.testaccport"
 	iface := "ether1"
-	bridge := bridge_name
 	horizon := "none"
 	learn := "auto"
 	unknown_multicast_flood := true
