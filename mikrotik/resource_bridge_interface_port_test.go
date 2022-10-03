@@ -33,7 +33,6 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 	restricted_role := false
 	restricted_tcn := false
 	bpdu_guard := false
-	priority := 0x10
 	path_cost := 10
 	internal_path_cost := 10
 	edge := "no-discover"
@@ -48,7 +47,7 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 			{
 				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
-					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
+					auto_isolate, restricted_role, restricted_tcn, bpdu_guard,
 					path_cost, internal_path_cost, edge, point_to_point, disabled, comment,
 					bridge_mtu, bridge_name, bridge_disabled, bridge_autoMac, bridge_adminMac, bridge_comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -68,7 +67,7 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 			{
 				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
-					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
+					auto_isolate, restricted_role, restricted_tcn, bpdu_guard,
 					path_cost+5, internal_path_cost+10, edge, point_to_point, disabled, comment,
 					bridge_mtu, bridge_name, bridge_disabled, bridge_autoMac, bridge_adminMac, bridge_comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -138,7 +137,7 @@ func testAccCheckBridgeInterfacePortDestroy(s *terraform.State) error {
 func testAccBridgeInterfacePort(iface string, bridge string, horizon string, learn string,
 	unknown_multicast_flood bool, unknown_unicast_flood bool, broadcast_flood bool, trusted bool,
 	hardware_offload bool, auto_isolate bool, restricted_role bool, restricted_tcn bool, bpdu_guard bool,
-	priority int, path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool,
+	path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool,
 	comment string, bridge_mtu int, bridge_name string, bridge_disabled bool, bridge_autoMac bool,
 	bridge_adminMac string, bridge_comment string) string {
 	return fmt.Sprintf(`
@@ -164,7 +163,6 @@ func testAccBridgeInterfacePort(iface string, bridge string, horizon string, lea
 			restricted_role = %t
 			restricted_tcn = %t
 			bpdu_guard = %t
-			priority = %d
 			path_cost = %d
 			internal_path_cost = %d
 			edge = %q
@@ -175,6 +173,6 @@ func testAccBridgeInterfacePort(iface string, bridge string, horizon string, lea
 	`, bridge_mtu, bridge_name, bridge_disabled, bridge_autoMac, bridge_adminMac, bridge_comment,
 		iface, bridge, horizon, learn, unknown_multicast_flood,
 		unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
-		auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
+		auto_isolate, restricted_role, restricted_tcn, bpdu_guard,
 		path_cost, internal_path_cost, edge, point_to_point, disabled, comment)
 }
