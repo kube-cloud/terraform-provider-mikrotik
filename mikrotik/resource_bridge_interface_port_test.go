@@ -33,9 +33,9 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 	restricted_role := false
 	restricted_tcn := false
 	bpdu_guard := false
-	priority := 90
-	path_cost := 20
-	internal_path_cost := 30
+	priority := 10
+	path_cost := 10
+	internal_path_cost := 10
 	edge := "no-discover"
 	point_to_point := "yes"
 	disabled := false
