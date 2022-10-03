@@ -131,7 +131,7 @@ func testAccCheckBridgeInterfaceDestroy(s *terraform.State) error {
 func testAccBridgeInterfacePort(iface string, bridge string, horizon string, learn string,
 	unknown_multicast_flood bool, unknown_unicast_flood bool, broadcast_flood bool, trusted bool,
 	hardware_offload bool, auto_isolate bool, restricted_role bool, restricted_tcn bool, bpdu_guard bool,
-	priority bool, path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool, comment string) string {
+	priority int, path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool, comment string) string {
 	return fmt.Sprintf(`
 		resource "mikrotik_bridge_interface_port" "testacc" {
 			interface = %q
