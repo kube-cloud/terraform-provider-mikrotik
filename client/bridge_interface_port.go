@@ -21,7 +21,6 @@ type BridgeInterfacePort struct {
 	RestrictedRole        bool   `mikrotik:"restricted-role"`
 	RestrictedTcn         bool   `mikrotik:"restricted-tcn"`
 	BpduGuard             bool   `mikrotik:"bpdu-guard"`
-	Priority              int    `mikrotik:"priority"`
 	PathCost              int    `mikrotik:"path-cost"`
 	InternalPathCost      int    `mikrotik:"internal-path-cost"`
 	Edge                  string `mikrotik:"edge"`

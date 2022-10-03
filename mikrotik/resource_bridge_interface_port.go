@@ -98,12 +98,6 @@ func resourceBridgeInterfacePort() *schema.Resource {
 				Default:     false,
 				Description: "Bridge Port BPDU Guard.",
 			},
-			"priority": {
-				Type:        schema.TypeInt,
-				Optional:    true,
-				Default:     0x80,
-				Description: "Bridge Port Priority (In Hexadecimal).",
-			},
 			"path_cost": {
 				Type:        schema.TypeInt,
 				Optional:    true,
@@ -210,7 +204,6 @@ func dataToBridgeInterfacePort(d *schema.ResourceData) *client.BridgeInterfacePo
 		RestrictedRole:        d.Get("restricted_role").(bool),
 		RestrictedTcn:         d.Get("restricted_tcn").(bool),
 		BpduGuard:             d.Get("bpdu_guard").(bool),
-		Priority:              d.Get("priority").(int),
 		PathCost:              d.Get("path_cost").(int),
 		InternalPathCost:      d.Get("internal_path_cost").(int),
 		Edge:                  d.Get("edge").(string),
@@ -272,10 +265,6 @@ func recordBridgeInterfacePortToData(r *client.BridgeInterfacePort, d *schema.Re
 	}
 
 	if err := d.Set("bpdu_guard", r.BpduGuard); err != nil {
-		diags = append(diags, diag.FromErr(err)...)
-	}
-
-	if err := d.Set("priority", r.Priority); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
 
