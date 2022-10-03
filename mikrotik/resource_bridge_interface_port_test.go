@@ -12,9 +12,16 @@ import (
 
 func TestBridgeInterfacePort_basic(t *testing.T) {
 
+	bridge_mtu := 1500
+	bridge_name := "test-brigde-2"
+	bridge_comment := "test-comment-2"
+	bridge_autoMac := false
+	bridge_adminMac := "74:4D:28:F3:A7:16"
+	bridge_disabled := false
+
 	resourceName := "mikrotik_bridge_interface_port.testacc"
 	iface := "ether1"
-	bridge := "test-brigde"
+	bridge := bridge_name
 	horizon := "none"
 	learn := "auto"
 	unknown_multicast_flood := true
@@ -42,7 +49,8 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
-					path_cost, internal_path_cost, edge, point_to_point, disabled, comment),
+					path_cost, internal_path_cost, edge, point_to_point, disabled, comment,
+					bridge_mtu, bridge_name, bridge_disabled, bridge_autoMac, bridge_adminMac, bridge_comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccBridgeInterfacePortExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
@@ -62,7 +70,8 @@ func TestBridgeInterfacePort_basic(t *testing.T) {
 				Config: testAccBridgeInterfacePort(iface, bridge, horizon, learn, unknown_multicast_flood,
 					unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 					auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
-					path_cost+5, internal_path_cost+10, edge, point_to_point, disabled, comment),
+					path_cost+5, internal_path_cost+10, edge, point_to_point, disabled, comment,
+					bridge_mtu, bridge_name, bridge_disabled, bridge_autoMac, bridge_adminMac, bridge_comment),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccBridgeInterfacePortExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
@@ -131,8 +140,18 @@ func testAccCheckBridgeInterfacePortDestroy(s *terraform.State) error {
 func testAccBridgeInterfacePort(iface string, bridge string, horizon string, learn string,
 	unknown_multicast_flood bool, unknown_unicast_flood bool, broadcast_flood bool, trusted bool,
 	hardware_offload bool, auto_isolate bool, restricted_role bool, restricted_tcn bool, bpdu_guard bool,
-	priority int, path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool, comment string) string {
+	priority int, path_cost int, internal_path_cost int, edge string, point_to_point string, disabled bool,
+	comment string, bridge_mtu int, bridge_name string, bridge_disabled bool, bridge_autoMac bool,
+	bridge_adminMac string, bridge_comment string) string {
 	return fmt.Sprintf(`
+		resource "mikrotik_bridge_interface" "testacc" {
+			mtu = %d
+			name = %q
+			disabled = %t
+			auto_mac = %t
+			admin_mac = %q
+			comment = %q
+		}
 		resource "mikrotik_bridge_interface_port" "testacc" {
 			interface = %q
 			bridge = %q
@@ -155,7 +174,8 @@ func testAccBridgeInterfacePort(iface string, bridge string, horizon string, lea
 			disabled = %t
 			comment = %q
 		}
-	`, iface, bridge, horizon, learn, unknown_multicast_flood,
+	`, bridge_mtu, bridge_name, bridge_disabled, bridge_autoMac, bridge_adminMac, bridge_comment,
+		iface, bridge, horizon, learn, unknown_multicast_flood,
 		unknown_unicast_flood, broadcast_flood, trusted, hardware_offload,
 		auto_isolate, restricted_role, restricted_tcn, bpdu_guard, priority,
 		path_cost, internal_path_cost, edge, point_to_point, disabled, comment)
