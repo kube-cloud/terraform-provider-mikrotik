@@ -3,4 +3,4 @@
 #
 # [admin@MikroTik] /interface bridge> :put [ find where name=bridge-name]
 # *17
-terraform import mikrotik_bridge_interface.bridge <bridge_name>
+terraform import mikrotik_bridge_interface.bridge bridge_name
