@@ -116,11 +116,7 @@ func dataToDhcpServerNetwork(d *schema.ResourceData) *client.DhcpServerNetwork {
 
 func dhcpServerNetworkToData(r *client.DhcpServerNetwork, d *schema.ResourceData) diag.Diagnostics {
 	var diags diag.Diagnostics
-	var localNetmask string
 
-	if len(r.Netmask) == 0 {
-		localNetmask = "0"
-	}
 	if err := d.Set("address", r.Address); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
@@ -133,7 +129,7 @@ func dhcpServerNetworkToData(r *client.DhcpServerNetwork, d *schema.ResourceData
 	if err := d.Set("gateway", r.Gateway); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
-	if err := d.Set("netmask", localNetmask); err != nil {
+	if err := d.Set("netmask", r.Netmask); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
 	d.SetId(r.Id)
