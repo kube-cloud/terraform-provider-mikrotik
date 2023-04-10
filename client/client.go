@@ -253,7 +253,7 @@ func GetConfigFromEnv() (host, username, password string, tls bool, caCertificat
 	if host == "" || username == "" || password == "" {
 
 		// Exit in Panic
-		panic("Unable to find the MIKROTIK_HOST, MIKROTIK_USER or MIKROTIK_PASSWORD environment variable")
+		// panic("Unable to find the MIKROTIK_HOST, MIKROTIK_USER or MIKROTIK_PASSWORD environment variable")
 	}
 
 	// Return All Variables
