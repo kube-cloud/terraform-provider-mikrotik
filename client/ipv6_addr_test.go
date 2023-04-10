@@ -10,6 +10,8 @@ func TestAddIpv6AddressAndDeleteIpv6Address(t *testing.T) {
 		t.Skip()
 	}
 
+	SkipIpAddressV6IfUnsupported(t)
+
 	c := NewClient(GetConfigFromEnv())
 
 	address := "1:1:1:1:1:1:1:1/64"
