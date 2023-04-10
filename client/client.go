@@ -16,6 +16,7 @@ import (
 
 	"github.com/go-routeros/routeros"
 	"github.com/go-routeros/routeros/proto"
+	"github.com/joho/godotenv"
 )
 
 type Mikrotik struct {
@@ -156,26 +157,106 @@ func NewClient(host, username, password string, tls bool, caCertificate string, 
 	}
 }
 
+/**
+ * Function used to Load Client Configuration from Environment Variables
+ */
 func GetConfigFromEnv() (host, username, password string, tls bool, caCertificate string, insecure bool) {
+
+	// Load .env File if exists
+	envFile, _ := godotenv.Read("../.env")
+
+	// Initialize Host
 	host = os.Getenv("MIKROTIK_HOST")
+
+	// If Host is Empty
+	if host == "" {
+
+		// Initialize from .env
+		host = envFile["MIKROTIK_HOST"]
+	}
+
+	// Initialize username
 	username = os.Getenv("MIKROTIK_USER")
+
+	// If Username is Empty
+	if username == "" {
+
+		// Initialize from .env
+		username = envFile["MIKROTIK_USER"]
+	}
+
+	// Initialize Password
 	password = os.Getenv("MIKROTIK_PASSWORD")
+
+	// If Password is Empty
+	if password == "" {
+
+		// Initialize from .env
+		password = envFile["MIKROTIK_PASSWORD"]
+	}
+
+	// Initialize TLS
 	tlsString := os.Getenv("MIKROTIK_TLS")
+
+	// If Tls String is Empty
+	if tlsString == "" {
+
+		// Initialize from .env
+		tlsString = envFile["MIKROTIK_TLS"]
+	}
+
+	// Check tlsString is "true"
 	if tlsString == "true" {
+
+		// Initialize TLS to "true"
 		tls = true
+
 	} else {
+
+		// Initialize TLS to "false"
 		tls = false
 	}
+
+	// Initialize CA certificate
 	caCertificate = os.Getenv("MIKROTIK_CA_CERTIFICATE")
+
+	// If caCertificate is Empty
+	if caCertificate == "" {
+
+		// Initialize from .env
+		caCertificate = envFile["MIKROTIK_CA_CERTIFICATE"]
+	}
+
+	// Initialize Insecure String
 	insecureString := os.Getenv("MIKROTIK_INSECURE")
+
+	// If insecureString is Empty
+	if insecureString == "" {
+
+		// Initialize from .env
+		insecureString = envFile["MIKROTIK_INSECURE"]
+	}
+
+	// If insecureString is "true"
 	if insecureString == "true" {
+
+		// Initialize "insecure" to "true"
 		insecure = true
+
 	} else {
+
+		// Initialize "insecure" to "false"
 		insecure = false
 	}
+
+	// If one of Required parameters is empty
 	if host == "" || username == "" || password == "" {
-		// panic("Unable to find the MIKROTIK_HOST, MIKROTIK_USER or MIKROTIK_PASSWORD environment variable")
+
+		// Exit in Panic
+		panic("Unable to find the MIKROTIK_HOST, MIKROTIK_USER or MIKROTIK_PASSWORD environment variable")
 	}
+
+	// Return All Variables
 	return host, username, password, tls, caCertificate, insecure
 }
 
