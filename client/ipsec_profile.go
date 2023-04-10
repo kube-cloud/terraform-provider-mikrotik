@@ -10,9 +10,9 @@ type IpSecProfile struct {
 	Name          string `mikrotik:"name"`
 	DhGroup       string `mikrotik:"dh-group"`
 	DpdInterval   string `mikrotik:"dpd-interval"`
-	DpdMaxFailure string `mikrotik:"dpd-maximum-failures"`
+	DpdMaxFailure int    `mikrotik:"dpd-maximum-failures"`
 	EncAlgorithms string `mikrotik:"enc-algorithm"`
-	HashAlgorithm string `mikrotik:"enc-algorithm"`
+	HashAlgorithm string `mikrotik:"hash-algorithm"`
 	Lifetime      string `mikrotik:"lifetime"`
 	NatTraversal  bool   `mikrotik:"nat-traversal"`
 	ProposalCheck string `mikrotik:"proposal-check"`
