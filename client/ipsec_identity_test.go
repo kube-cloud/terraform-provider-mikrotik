@@ -13,6 +13,14 @@ func TestAddIpSecIdentityAndDeleteIpSecIdentity(t *testing.T) {
 	// Get Client from Environments Configuration
 	c := NewClient(GetConfigFromEnv())
 
+	// Expected IPSec Policy Group
+	expectedIpSecPolicyGroup := &IpSecPolicyGroup{
+		Name: "TestGroup",
+	}
+
+	// Adding IpSecPolicyGroup
+	ipSecPolicyGroup, _ := c.AddIpSecPolicyGroup(expectedIpSecPolicyGroup)
+
 	// Expected IPSec Profile
 	expectedIpSecProfile := &IpSecProfile{
 		Name:          "TestName",
@@ -53,6 +61,7 @@ func TestAddIpSecIdentityAndDeleteIpSecIdentity(t *testing.T) {
 	remoteId := "auto"
 	generatePolicy := "no"
 	disabled := false
+	policyTemplateGroup := expectedIpSecPolicyGroup.Name
 
 	// Updated Generated Pocily (updatedGeneratePolicy)
 	updatedGeneratePolicy := "port-strict"
@@ -62,14 +71,15 @@ func TestAddIpSecIdentityAndDeleteIpSecIdentity(t *testing.T) {
 
 	// Expected IPSec Identity
 	expectedIpSecIdentity := &IpSecIdentity{
-		Peer:           peer,
-		AuthMethod:     authMethod,
-		Secret:         secret,
-		NoTrackChain:   noTrackChain,
-		MyId:           myId,
-		RemoteId:       remoteId,
-		GeneratePolicy: generatePolicy,
-		Disabled:       disabled,
+		Peer:                peer,
+		AuthMethod:          authMethod,
+		Secret:              secret,
+		NoTrackChain:        noTrackChain,
+		MyId:                myId,
+		RemoteId:            remoteId,
+		GeneratePolicy:      generatePolicy,
+		PolicyTemplateGroup: policyTemplateGroup,
+		Disabled:            disabled,
 	}
 
 	// Adding IpSecIdentity
@@ -158,5 +168,15 @@ func TestAddIpSecIdentityAndDeleteIpSecIdentity(t *testing.T) {
 
 		// Log
 		t.Errorf("Error Delete an IPSec Profile with: %v", err)
+	}
+
+	// Delete IPSecProfile
+	err = c.DeleteIpSecPolicyGroup(ipSecPolicyGroup.Id)
+
+	// If There is Error
+	if err != nil {
+
+		// Log
+		t.Errorf("Error Delete an IPSec Policy Group with: %v", err)
 	}
 }
