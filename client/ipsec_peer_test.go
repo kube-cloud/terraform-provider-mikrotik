@@ -27,7 +27,7 @@ func TestAddIpSecPeerAndDeleteIpSecPeer(t *testing.T) {
 	}
 
 	// Adding IpSecProfile
-	ipSecProfile, err := c.AddIpSecProfile(expectedIpSecProfile)
+	ipSecProfile, _ := c.AddIpSecProfile(expectedIpSecProfile)
 
 	// Define IpSecPeer Expected Values
 	name := "TestName"

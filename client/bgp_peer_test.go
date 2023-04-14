@@ -109,7 +109,7 @@ func TestAddAndUpdateBgpPeerWithOptionalFieldsAndDeleteBgpPeer(t *testing.T) {
 	expectedBgpPeer.CiscoVplsNlriLenFmt = "bits"
 	expectedBgpPeer.AllowAsIn = 0
 
-	bgpPeer, err = c.UpdateBgpPeer(expectedBgpPeer)
+	bgpPeer, _ = c.UpdateBgpPeer(expectedBgpPeer)
 
 	if !reflect.DeepEqual(bgpPeer, expectedBgpPeer) {
 		t.Errorf("The bgp peer does not match what we expected. actual: %v expected: %v", bgpPeer, expectedBgpPeer)

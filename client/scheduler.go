@@ -23,7 +23,7 @@ func (client Mikrotik) FindScheduler(name string) (*Scheduler, error) {
 
 	cmd := []string{"/system/scheduler/print", "?name=" + name}
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
-	r, err := c.RunArgs(cmd)
+	r, _ := c.RunArgs(cmd)
 
 	log.Printf("[DEBUG] Found scheduler from mikrotik api %v", r)
 	scheduler := &Scheduler{}

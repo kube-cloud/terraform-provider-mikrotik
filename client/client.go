@@ -249,13 +249,6 @@ func GetConfigFromEnv() (host, username, password string, tls bool, caCertificat
 		insecure = false
 	}
 
-	// If one of Required parameters is empty
-	if host == "" || username == "" || password == "" {
-
-		// Exit in Panic
-		// panic("Unable to find the MIKROTIK_HOST, MIKROTIK_USER or MIKROTIK_PASSWORD environment variable")
-	}
-
 	// Return All Variables
 	return host, username, password, tls, caCertificate, insecure
 }

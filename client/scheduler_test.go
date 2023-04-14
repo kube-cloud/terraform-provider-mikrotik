@@ -32,7 +32,7 @@ func TestCreateUpdateDeleteAndFindScheduler(t *testing.T) {
 
 	// update and reassert
 	expectedScheduler.OnEvent = "test"
-	scheduler, err = c.UpdateScheduler(expectedScheduler)
+	scheduler, _ = c.UpdateScheduler(expectedScheduler)
 
 	if !reflect.DeepEqual(scheduler, expectedScheduler) {
 		t.Errorf("The updated scheduler does not match what we expected. actual: %v expected: %v", scheduler, expectedScheduler)

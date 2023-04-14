@@ -10,7 +10,6 @@ var as int = 65533
 var updatedAs int = 65534
 var clientToClientReflection bool = true
 var clusterID string = "172.21.16.1"
-var noClusterID string = ""
 var bgpComment string = "test comment with spaces"
 var confederation int = 8
 var updatedConfederation int = 5
@@ -100,7 +99,7 @@ func TestAddAndUpdateBgpInstanceWithOptionalFieldsAndDeleteBgpInstance(t *testin
 	expectedBgpInstance.Confederation = updatedConfederation
 	expectedBgpInstance.As = updatedAs
 
-	bgpInstance, err = c.UpdateBgpInstance(expectedBgpInstance)
+	bgpInstance, _ = c.UpdateBgpInstance(expectedBgpInstance)
 
 	if !reflect.DeepEqual(bgpInstance, expectedBgpInstance) {
 		t.Errorf("The bgp instance does not match what we expected. actual: %v expected: %v", bgpInstance, expectedBgpInstance)
