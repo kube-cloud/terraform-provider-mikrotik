@@ -34,3 +34,27 @@ After those environment variables are set you can run the tests with the followi
 ```bash
 make testacc
 ```
+
+# IPSec Policy Protocol List
+```
+all   egp      ggp  icmp       igmp     ipsec-ah    ipv6-frag   ipv6-route  ospf  rdp   sctp  udp       vrrp   
+dccp  encap    gre  icmpv6     ipencap  ipsec-esp   ipv6-nonxt  iso-tp4     pim   rspf  st    udp-lite  xns-idp
+ddp   etherip  hmp  idpr-cmtp  ipip     ipv6-encap  ipv6-opts   l2tp        pup   rsvp  tcp   vmtp      xtp
+```
+
+# IPSec Policy Action
+
+```
+discard  encrypt  none
+```
+
+# IPSec Policy Action Level
+```
+require unique use
+```
+
+# IPSec Policy IPsec Protocol
+```
+ah esp
+```
+
