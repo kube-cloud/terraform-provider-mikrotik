@@ -84,6 +84,7 @@ func Provider(client *mt.Mikrotik) *schema.Provider {
 			"mikrotik_bridge_interface":      resourceBridgeInterface(),
 			"mikrotik_bridge_interface_port": resourceBridgeInterfacePort(),
 			"mikrotik_ipsec_proposal":        resourceIpSecProposal(),
+			"mikrotik_ipsec_policy_group":    resourceIpSecPolicyGroup(),
 		},
 	}
 
