@@ -1,6 +1,9 @@
 package client
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 /**
  * Define IPSec Identity Structure
@@ -173,6 +176,13 @@ func (client Mikrotik) FindIpSecIdentity(id string) (*IpSecIdentity, error) {
 
 		// Return Error
 		return nil, err
+	}
+
+	// If Resource Name Empty (the Not found)
+	if ipSecIdentity.Id == "" {
+
+		// Return Not Found Error
+		return nil, NewNotFound(fmt.Sprintf("IPSec Identity `%s` not found", id))
 	}
 
 	// If MyID is Empty

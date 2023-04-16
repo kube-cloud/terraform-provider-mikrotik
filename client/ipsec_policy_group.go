@@ -1,6 +1,9 @@
 package client
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 /**
  * Define IPSec Policy Group Structure
@@ -156,6 +159,13 @@ func (client Mikrotik) FindIpSecPolicyGroup(id string) (*IpSecPolicyGroup, error
 
 		// Return Error
 		return nil, err
+	}
+
+	// If Resource Name Empty (the Not found)
+	if ipSecPolicyGroup.Id == "" {
+
+		// Return Not Found Error
+		return nil, NewNotFound(fmt.Sprintf("IPSec Policy Group `%s` not found", id))
 	}
 
 	// Return result

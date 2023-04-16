@@ -1,6 +1,9 @@
 package client
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 /**
  * Define IPSec Proposal Structure
@@ -161,6 +164,13 @@ func (client Mikrotik) FindIpSecProposal(id string) (*IpSecProposal, error) {
 
 		// Return Error
 		return nil, err
+	}
+
+	// If Resource Name Empty (the Not found)
+	if ipSecProposal.Name == "" {
+
+		// Return Not Found Error
+		return nil, NewNotFound(fmt.Sprintf("IPSec Proposal `%s` not found", id))
 	}
 
 	// Return result

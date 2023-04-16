@@ -200,7 +200,7 @@ func deleteIpSecProposal(ctx context.Context, d *schema.ResourceData, m interfac
  */
 func dataToIpSecProposal(d *schema.ResourceData) *client.IpSecProposal {
 
-	//Build and Return IPSec Proposal
+	// Build and Return IPSec Proposal
 	return &client.IpSecProposal{
 		Id:             d.Id(),
 		Name:           d.Get("name").(string),
@@ -217,8 +217,10 @@ func dataToIpSecProposal(d *schema.ResourceData) *client.IpSecProposal {
  */
 func ipsecProposalToData(ipsecProposal *client.IpSecProposal, d *schema.ResourceData) {
 
+	// Initialize Resource ID
+	d.SetId(ipsecProposal.Id)
+
 	// Initialize Fields
-	d.Set("id", ipsecProposal.Id)
 	d.Set("name", ipsecProposal.Name)
 	d.Set("auth_algorithms", ipsecProposal.AuthAlgorithms)
 	d.Set("enc_algorithms", ipsecProposal.EncAlgorithms)

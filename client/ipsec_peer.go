@@ -1,6 +1,9 @@
 package client
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 /**
  * Define IPSec Peer Structure
@@ -163,6 +166,13 @@ func (client Mikrotik) FindIpSecPeer(id string) (*IpSecPeer, error) {
 
 		// Return Error
 		return nil, err
+	}
+
+	// If Resource Name Empty (the Not found)
+	if ipSecPeer.Id == "" {
+
+		// Return Not Found Error
+		return nil, NewNotFound(fmt.Sprintf("IPSec Peer `%s` not found", id))
 	}
 
 	// If Port is 0

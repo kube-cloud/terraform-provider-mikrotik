@@ -1,6 +1,9 @@
 package client
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 /**
  * Define IPSec Profile Structure
@@ -164,6 +167,13 @@ func (client Mikrotik) FindIpSecProfile(id string) (*IpSecProfile, error) {
 
 		// Return Error
 		return nil, err
+	}
+
+	// If Resource Name Empty (the Not found)
+	if ipSecProfile.Name == "" {
+
+		// Return Not Found Error
+		return nil, NewNotFound(fmt.Sprintf("IPSec Profile `%s` not found", id))
 	}
 
 	// Return result

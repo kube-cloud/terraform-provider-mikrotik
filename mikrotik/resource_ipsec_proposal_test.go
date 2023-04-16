@@ -61,7 +61,7 @@ func TestIpSecProposal_Create(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "auth_algorithms", authAlgorithms),
 					resource.TestCheckResourceAttr(resourceName, "enc_algorithms", encAlgorithms),
 					resource.TestCheckResourceAttr(resourceName, "lifetime", lifetime),
-					resource.TestCheckResourceAttr(resourceName, "pfsGroup", pfsGroup),
+					resource.TestCheckResourceAttr(resourceName, "pfs_group", pfsGroup),
 					resource.TestCheckResourceAttr(resourceName, "disabled", strconv.FormatBool(disabled)),
 				),
 			},
@@ -83,7 +83,7 @@ func TestIpSecProposal_Create(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "auth_algorithms", authAlgorithms),
 					resource.TestCheckResourceAttr(resourceName, "enc_algorithms", updatedEncAlgorithms),
 					resource.TestCheckResourceAttr(resourceName, "lifetime", updatedLifetime),
-					resource.TestCheckResourceAttr(resourceName, "pfsGroup", pfsGroup),
+					resource.TestCheckResourceAttr(resourceName, "pfs_group", pfsGroup),
 					resource.TestCheckResourceAttr(resourceName, "disabled", strconv.FormatBool(disabled)),
 				),
 			},
@@ -141,25 +141,46 @@ func testAccIpSecProposalExists(resourceName string) resource.TestCheckFunc {
 	}
 }
 
+/**
+ * Function used to Test if Terraform Resource is Destroyed
+ */
 func testAccCheckIpSecProposalDestroy(s *terraform.State) error {
+
+	// Build Client
 	c := client.NewClient(client.GetConfigFromEnv())
+
+	// Iterate over Resources
 	for _, rs := range s.RootModule().Resources {
+
+		// If Resource is not IPSec Proposal
 		if rs.Type != "mikrotik_ipsec_proposal" {
+
+			// Continue Iteration
 			continue
 		}
 
+		// Find Resource
 		remoteRecord, err := c.FindIpSecProposal(rs.Primary.ID)
 
+		// Process NotFound
 		_, ok := err.(*client.NotFound)
+
+		// If Not OK and Error
 		if !ok && err != nil {
+
+			// Return Error
 			return err
 		}
 
+		// If Record Exists
 		if remoteRecord != nil {
+
+			// Return Formatted Error
 			return fmt.Errorf("remote record (%s) still exists", remoteRecord.Id)
 		}
-
 	}
+
+	// Return Nil
 	return nil
 }
 
