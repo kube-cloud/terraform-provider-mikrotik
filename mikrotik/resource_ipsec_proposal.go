@@ -47,6 +47,7 @@ func resourceIpSecProposal() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Optional:    false,
+				Required:    true,
 				Description: "IPSec Proposal Name.",
 			},
 			"auth_algorithms": {
@@ -217,6 +218,7 @@ func dataToIpSecProposal(d *schema.ResourceData) *client.IpSecProposal {
 func ipsecProposalToData(ipsecProposal *client.IpSecProposal, d *schema.ResourceData) {
 
 	// Initialize Fields
+	d.Set("id", ipsecProposal.Id)
 	d.Set("name", ipsecProposal.Name)
 	d.Set("auth_algorithms", ipsecProposal.AuthAlgorithms)
 	d.Set("enc_algorithms", ipsecProposal.EncAlgorithms)

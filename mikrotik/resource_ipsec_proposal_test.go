@@ -19,7 +19,7 @@ func TestIpSecProposal_Create(t *testing.T) {
 	resourceName := "mikrotik_ipsec_proposal.testacc"
 
 	// Define IPSec Proposal Values
-	name := "TestName"
+	name := "ipsec-proposal"
 	authAlgorithms := "sha512,sha256,sha1"
 	encAlgorithms := "aes-256-cbc,aes-192-cbc,aes-128-cbc"
 	lifetime := "30m"
