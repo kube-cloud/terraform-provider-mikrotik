@@ -24,6 +24,7 @@ type IpSecIdentity struct {
 	NoTrackChain        string `mikrotik:"notrack-chain"`
 	MyId                string `mikrotik:"my-id"`
 	RemoteId            string `mikrotik:"remote-id"`
+	MatchBy             string `mikrotik:"match-by"`
 	ModeConfig          string `mikrotik:"mode-config"`
 	GeneratePolicy      string `mikrotik:"generate-policy"`
 	Comment             string `mikrotik:"comment"`

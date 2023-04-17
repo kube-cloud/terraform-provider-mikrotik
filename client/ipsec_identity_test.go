@@ -59,6 +59,7 @@ func TestAddIpSecIdentityAndDeleteIpSecIdentity(t *testing.T) {
 	noTrackChain := ""
 	myId := "auto"
 	remoteId := "auto"
+	matchBy := ""
 	generatePolicy := "no"
 	disabled := false
 	policyTemplateGroup := expectedIpSecPolicyGroup.Name
@@ -77,6 +78,7 @@ func TestAddIpSecIdentityAndDeleteIpSecIdentity(t *testing.T) {
 		NoTrackChain:        noTrackChain,
 		MyId:                myId,
 		RemoteId:            remoteId,
+		MatchBy:             matchBy,
 		GeneratePolicy:      generatePolicy,
 		PolicyTemplateGroup: policyTemplateGroup,
 		Disabled:            disabled,

@@ -35,25 +35,70 @@ After those environment variables are set you can run the tests with the followi
 make testacc
 ```
 
-# IPSec Policy Protocol List
+# IPSec
+
+## Proposal
+
+## Authentication Algorithms (can select multiple)
+```
+md5  null  sha1  sha256  sha512
+```
+
+### Encryption Algorithms (can select multiple)
+```
+3des  aes-128-cbc  aes-128-ctr  aes-128-gcm  aes-192-cbc  aes-192-ctr  aes-192-gcm  aes-256-cbc
+aes-256-ctr  aes-256-gcm  blowfish  camellia-128  camellia-192  camellia-256  des  null  twofish
+```
+
+### PFS Group (select ony one)
+```
+ec2n155   ec2n185   ecp256    ecp384    ecp521    modp768   modp1024
+modp1536  modp2048  modp3072  modp4096  modp6144  modp8192  none
+```
+
+## Identity
+
+### Authentication Method (select only one)
+```
+digital-signature  eap  eap-radius  pre-shared-key  pre-shared-key-xauth  rsa-key  rsa-signature-hybrid
+```
+
+### EAP Method (select only one)
+```
+eap-mschapv2  eap-peap  eap-tls  eap-ttls
+```
+
+### Generate Policy
+```
+no  port-override  port-strict
+```
+
+### Matched By
+```
+certificate  remote-id
+```
+
+## Policy
+
+### Protocol List (can select multiple)
 ```
 all   egp      ggp  icmp       igmp     ipsec-ah    ipv6-frag   ipv6-route  ospf  rdp   sctp  udp       vrrp   
 dccp  encap    gre  icmpv6     ipencap  ipsec-esp   ipv6-nonxt  iso-tp4     pim   rspf  st    udp-lite  xns-idp
 ddp   etherip  hmp  idpr-cmtp  ipip     ipv6-encap  ipv6-opts   l2tp        pup   rsvp  tcp   vmtp      xtp
 ```
 
-# IPSec Policy Action
+### Action (select only one)
 
 ```
 discard  encrypt  none
 ```
 
-# IPSec Policy Action Level
+### Action Level (select only one)
 ```
 require unique use
 ```
 
-# IPSec Policy IPsec Protocol
+### IPsec Protocol (select only one)
 ```
 ah esp
 ```
