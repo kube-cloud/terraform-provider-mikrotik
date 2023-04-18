@@ -70,11 +70,13 @@ func TestAddIpSecPolicyAndDeleteIpSecPolicy(t *testing.T) {
 	level := "require"
 	ipSecProtocol := "esp"
 	proposal := ipSecProposal.Name
+	disabled := true
 	updatedAction := "encrypt"
 	updatedLevel := "require"
 	updatedIpSecProtocol := "esp"
 	updatedSourcePort := 0
 	updatedProtocol := "egp"
+	updatedDisabled := false
 
 	// Expected IPSec Policy
 	expectedIpSecPolicy := &IpSecPolicy{
@@ -90,6 +92,7 @@ func TestAddIpSecPolicyAndDeleteIpSecPolicy(t *testing.T) {
 		Level:              level,
 		IpSecProtocol:      ipSecProtocol,
 		Proposal:           proposal,
+		Disabled:           disabled,
 	}
 
 	// Adding IpSecPolicy
@@ -118,6 +121,7 @@ func TestAddIpSecPolicyAndDeleteIpSecPolicy(t *testing.T) {
 	expectedIpSecPolicy.SourcePort = updatedSourcePort
 	expectedIpSecPolicy.Action = updatedAction
 	expectedIpSecPolicy.Protocol = updatedProtocol
+	expectedIpSecPolicy.Disabled = updatedDisabled
 
 	// Execute Update
 	ipSecPolicy, err = c.UpdateIpSecPolicy(expectedIpSecPolicy)

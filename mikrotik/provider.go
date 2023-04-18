@@ -88,6 +88,7 @@ func Provider(client *mt.Mikrotik) *schema.Provider {
 			"mikrotik_ipsec_peer":            resourceIpSecPeer(),
 			"mikrotik_ipsec_identity":        resourceIpSecIdentity(),
 			"mikrotik_ipsec_policy_group":    resourceIpSecPolicyGroup(),
+			"mikrotik_ipsec_policy":          resourceIpSecPolicy(),
 		},
 	}
 

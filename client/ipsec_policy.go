@@ -22,6 +22,7 @@ type IpSecPolicy struct {
 	Level              string `mikrotik:"level"`
 	IpSecProtocol      string `mikrotik:"ipsec-protocols"`
 	Proposal           string `mikrotik:"proposal"`
+	Disabled           bool   `mikrotik:"disabled"`
 }
 
 /**

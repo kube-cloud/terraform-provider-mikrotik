@@ -135,13 +135,13 @@ func resourceIpSecIdentity() *schema.Resource {
 				Default:     "no",
 				Description: "IPSec Identity Generate Policy",
 			},
-			"Comment": {
+			"comment": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Default:     "",
 				Description: "IPSec Identity Comment",
 			},
-			"Disabled": {
+			"disabled": {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Default:     false,
@@ -285,8 +285,8 @@ func dataToIpSecIdentity(d *schema.ResourceData) *client.IpSecIdentity {
 		MatchBy:             d.Get("match_by").(string),
 		ModeConfig:          d.Get("mode_config").(string),
 		GeneratePolicy:      d.Get("generate_policy").(string),
-		Comment:             d.Get("Comment").(string),
-		Disabled:            d.Get("Disabled").(bool),
+		Comment:             d.Get("comment").(string),
+		Disabled:            d.Get("disabled").(bool),
 	}
 }
 
@@ -316,6 +316,6 @@ func ipsecIdentityToData(ipsecIdentity *client.IpSecIdentity, d *schema.Resource
 	d.Set("match_by", ipsecIdentity.MatchBy)
 	d.Set("mode_config", ipsecIdentity.ModeConfig)
 	d.Set("generate_policy", ipsecIdentity.GeneratePolicy)
-	d.Set("Comment", ipsecIdentity.Comment)
-	d.Set("Disabled", ipsecIdentity.Disabled)
+	d.Set("comment", ipsecIdentity.Comment)
+	d.Set("disabled", ipsecIdentity.Disabled)
 }
