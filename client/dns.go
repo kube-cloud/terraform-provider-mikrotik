@@ -69,7 +69,7 @@ func (client Mikrotik) UpdateDnsRecord(d *DnsRecord) (*DnsRecord, error) {
 	}
 	cmd := Marshal("/ip/dns/static/set", d)
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
-	_, err = c.RunArgs(cmd)
+	_, _ = c.RunArgs(cmd)
 
 	return client.FindDnsRecord(d.Name)
 }

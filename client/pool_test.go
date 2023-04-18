@@ -68,7 +68,7 @@ func TestFindPoolByName_forExistingPool(t *testing.T) {
 		Ranges:  ranges,
 		Comment: comment,
 	}
-	pool, err := c.AddPool(p)
+	pool, _ := c.AddPool(p)
 
 	expectedPool, err := c.FindPoolByName(pool.Name)
 	if err != nil {

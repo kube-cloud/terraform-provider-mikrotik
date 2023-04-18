@@ -20,6 +20,7 @@ resource "mikrotik_vlan_interface" "default" {
 
 ### Optional
 
+- `comment` (String) Virtual LAN Interface Description. Default: `""`.
 - `disabled` (Boolean) Whether to create the interface in disabled state.
 - `interface` (String) Name of physical interface on top of which VLAN will work. Default: `*0`.
 - `mtu` (Number) Layer3 Maximum transmission unit. Default: `1500`.

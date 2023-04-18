@@ -113,7 +113,7 @@ func (client Mikrotik) FindScript(name string) (*Script, error) {
 	}
 	cmd := []string{"/system/script/print", "?name=" + name}
 	log.Printf("[INFO] Running the mikrotik command: `%s`", cmd)
-	r, err := c.RunArgs(cmd)
+	r, _ := c.RunArgs(cmd)
 
 	log.Printf("[DEBUG] Found script from mikrotik api %v", r)
 	script := &Script{}
