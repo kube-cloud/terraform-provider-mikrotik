@@ -89,6 +89,10 @@ func Provider(client *mt.Mikrotik) *schema.Provider {
 			"mikrotik_ipsec_identity":        resourceIpSecIdentity(),
 			"mikrotik_ipsec_policy_group":    resourceIpSecPolicyGroup(),
 			"mikrotik_ipsec_policy":          resourceIpSecPolicy(),
+			"mikrotik_firewall_rule":         resourceFirewallRule(),
+			"mikrotik_firewall_nat":          resourceFirewallNat(),
+			"mikrotik_firewall_mangle":       resourceFirewallMangle(),
+			"mikrotik_firewall_raw":          resourceFirewallRaw(),
 		},
 	}
 
