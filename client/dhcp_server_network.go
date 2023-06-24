@@ -7,12 +7,18 @@ import (
 
 // DhcpServerNetwork describes network configuration for DHCP server
 type DhcpServerNetwork struct {
-	Id        string `mikrotik:".id"`
-	Comment   string `mikrotik:"comment"`
-	Address   string `mikrotik:"address"`
-	Netmask   string `mikrotik:"netmask"`
-	Gateway   string `mikrotik:"gateway"`
-	DnsServer string `mikrotik:"dns-server"`
+	Id            string `mikrotik:".id"`
+	Comment       string `mikrotik:"comment"`
+	Address       string `mikrotik:"address"`
+	Netmask       string `mikrotik:"netmask"`
+	Gateway       string `mikrotik:"gateway"`
+	DnsServer     string `mikrotik:"dns-server"`
+	NextServer    string `mikrotik:"next-server"`
+	NtpServer     string `mikrotik:"ntp-server"`
+	WinsServer    string `mikrotik:"wins-server"`
+	BootFileName  string `mikrotik:"boot-file-name"`
+	Domain        string `mikrotik:"domain"`
+	DhcpOptionSet string `mikrotik:"dhcp-option-set"`
 }
 
 func (client Mikrotik) AddDhcpServerNetwork(d *DhcpServerNetwork) (*DhcpServerNetwork, error) {
