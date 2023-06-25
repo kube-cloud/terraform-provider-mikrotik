@@ -23,7 +23,7 @@ jobs:
           - experimental: true
             go: 1.17
             os: ubuntu-latest
-            routeros: "7.1beta6"
+            routeros: "6.49beta54"
             legacy_bgp_support: false
     steps:
       - name: Set up Go
