@@ -52,6 +52,42 @@ func resourceDhcpServerNetwork() *schema.Resource {
 				Default:     "0",
 				Description: "The actual network mask to be used by DHCP client. If set to '0' - netmask from network address will be used.",
 			},
+			"next_server": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "The actual TFTP Server IP used by PXE Agent to continue Boot Process.",
+			},
+			"ntp_server": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "The actual NTP Servers IP Addresses (as Comma Separated).",
+			},
+			"wins_server": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "The actual WINS Servers IP Addresses (as Coma Separated).",
+			},
+			"boot_file_name": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "The actual TFTP Boot File Name used by PXE Agent to continue Boot Process.",
+			},
+			"domain": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "The actual Network Domain.",
+			},
+			"dhcp_option_set": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "",
+				Description: "The actual DHCP Options Set (as Coma Separated).",
+			},
 		},
 	}
 }
@@ -109,6 +145,12 @@ func dataToDhcpServerNetwork(d *schema.ResourceData) *client.DhcpServerNetwork {
 	r.DnsServer = d.Get("dns_server").(string)
 	r.Gateway = d.Get("gateway").(string)
 	r.Netmask = d.Get("netmask").(string)
+	r.NextServer = d.Get("next_server").(string)
+	r.NtpServer = d.Get("ntp_server").(string)
+	r.WinsServer = d.Get("wins_server").(string)
+	r.BootFileName = d.Get("boot_file_name").(string)
+	r.Domain = d.Get("domain").(string)
+	r.DhcpOptionSet = d.Get("dhcp_option_set").(string)
 	r.Id = d.Id()
 
 	return r
@@ -130,6 +172,24 @@ func dhcpServerNetworkToData(r *client.DhcpServerNetwork, d *schema.ResourceData
 		diags = append(diags, diag.FromErr(err)...)
 	}
 	if err := d.Set("netmask", r.Netmask); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+	if err := d.Set("next_server", r.NextServer); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+	if err := d.Set("ntp_server", r.NtpServer); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+	if err := d.Set("wins_server", r.WinsServer); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+	if err := d.Set("boot_file_name", r.BootFileName); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+	if err := d.Set("domain", r.Domain); err != nil {
+		diags = append(diags, diag.FromErr(err)...)
+	}
+	if err := d.Set("dhcp_option_set", r.DhcpOptionSet); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
 	}
 	d.SetId(r.Id)

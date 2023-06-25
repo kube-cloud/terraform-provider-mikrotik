@@ -19,30 +19,72 @@ func TestDhcpServerNetwork_basic(t *testing.T) {
 	dnsServer := "10.10.10.3"
 	comment := "Terraform managed"
 	dnsServerUpdated := "192.168.5.3"
+	nextServer := "10.10.10.3"
+	ntpServer := "10.10.10.3"
+	winsServer := "10.10.10.3"
+	bootFileName := "pxelinux.0"
+	domain := "kue-cloud.com"
+	dhcpOptionSet := ""
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
 		CheckDestroy:      testAccCheckDhcpServerNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDhcpServerNetwork(address, netmask, gateway, dnsServer, comment),
+				Config: testAccDhcpServerNetwork(
+					address,
+					netmask,
+					gateway,
+					dnsServer,
+					comment,
+					nextServer,
+					ntpServer,
+					winsServer,
+					bootFileName,
+					domain,
+					dhcpOptionSet,
+				),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpServerNetworkExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "address", address),
 					resource.TestCheckResourceAttr(resourceName, "netmask", netmask),
 					resource.TestCheckResourceAttr(resourceName, "gateway", gateway),
 					resource.TestCheckResourceAttr(resourceName, "dns_server", dnsServer),
+					resource.TestCheckResourceAttr(resourceName, "next_server", nextServer),
+					resource.TestCheckResourceAttr(resourceName, "ntp_server", ntpServer),
+					resource.TestCheckResourceAttr(resourceName, "wins_server", winsServer),
+					resource.TestCheckResourceAttr(resourceName, "boot_file_name", bootFileName),
+					resource.TestCheckResourceAttr(resourceName, "domain", domain),
+					resource.TestCheckResourceAttr(resourceName, "dhcp_option_set", dhcpOptionSet),
 					resource.TestCheckResourceAttr(resourceName, "comment", comment),
 				),
 			},
 			{
-				Config: testAccDhcpServerNetwork(address, netmask, gateway, dnsServerUpdated, comment),
+				Config: testAccDhcpServerNetwork(
+					address,
+					netmask,
+					gateway,
+					dnsServerUpdated,
+					comment,
+					nextServer,
+					ntpServer,
+					winsServer,
+					bootFileName,
+					domain,
+					dhcpOptionSet,
+				),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpServerNetworkExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "address", address),
 					resource.TestCheckResourceAttr(resourceName, "netmask", netmask),
 					resource.TestCheckResourceAttr(resourceName, "gateway", gateway),
 					resource.TestCheckResourceAttr(resourceName, "dns_server", dnsServerUpdated),
+					resource.TestCheckResourceAttr(resourceName, "next_server", nextServer),
+					resource.TestCheckResourceAttr(resourceName, "ntp_server", ntpServer),
+					resource.TestCheckResourceAttr(resourceName, "wins_server", winsServer),
+					resource.TestCheckResourceAttr(resourceName, "boot_file_name", bootFileName),
+					resource.TestCheckResourceAttr(resourceName, "domain", domain),
+					resource.TestCheckResourceAttr(resourceName, "dhcp_option_set", dhcpOptionSet),
 					resource.TestCheckResourceAttr(resourceName, "comment", comment),
 				),
 			},
@@ -50,16 +92,22 @@ func TestDhcpServerNetwork_basic(t *testing.T) {
 	})
 }
 
-func testAccDhcpServerNetwork(address, netmask, gateway, dns_server, comment string) string {
+func testAccDhcpServerNetwork(address, netmask, gateway, dns_server, comment, next_server, ntp_server, wins_server, boot_file_name, domain, dhcp_option_set string) string {
 	return fmt.Sprintf(`
 resource mikrotik_dhcp_server_network "testacc" {
-	address    = %q
-	netmask    = %q
-	gateway    = %q
-	dns_server = %q
-	comment    = %q
+	address    		= %q
+	netmask    		= %q
+	gateway    		= %q
+	dns_server 		= %q
+	next_server 	= %q
+	ntp_server 		= %q
+	wins_server 	= %q
+	boot_file_name	= %q
+	domain 			= %q
+	dhcp_option_set	= %q
+	comment    		= %q
 }
-`, address, netmask, gateway, dns_server, comment)
+`, address, netmask, gateway, dns_server, next_server, ntp_server, wins_server, boot_file_name, domain, dhcp_option_set, comment)
 }
 
 func testAccCheckDhcpServerNetworkDestroy(s *terraform.State) error {

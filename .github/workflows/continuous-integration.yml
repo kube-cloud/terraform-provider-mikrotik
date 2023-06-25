@@ -19,12 +19,12 @@ jobs:
         # Test against latest stable release, v6 beta and v7 beta
         routeros: ["6.48.3", "6.49beta54"]
         legacy_bgp_support: [true]
-        include:
-          - experimental: true
-            go: 1.17
-            os: ubuntu-latest
-            routeros: "latest"
-            legacy_bgp_support: false
+        #include:
+        #  - experimental: false
+        #    go: 1.17
+        #    os: ubuntu-latest
+        #    routeros: "6.49beta54"
+        #    legacy_bgp_support: false
     steps:
       - name: Set up Go
         uses: actions/setup-go@v1

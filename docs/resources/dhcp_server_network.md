@@ -18,10 +18,16 @@ resource "mikrotik_dhcp_server_network" "default" {
 ### Optional
 
 - `address` (String) The network DHCP server(s) will lease addresses from.
+- `boot_file_name` (String) The actual TFTP Boot File Name used by PXE Agent to continue Boot Process. Default: `""`.
 - `comment` (String)
+- `dhcp_option_set` (String) The actual DHCP Options Set (as Coma Separated). Default: `""`.
 - `dns_server` (String) The DHCP client will use these as the default DNS servers.
+- `domain` (String) The actual Network Domain. Default: `""`.
 - `gateway` (String) The default gateway to be used by DHCP Client. Default: `0.0.0.0`.
 - `netmask` (String) The actual network mask to be used by DHCP client. If set to '0' - netmask from network address will be used. Default: `0`.
+- `next_server` (String) The actual TFTP Server IP used by PXE Agent to continue Boot Process. Default: `""`.
+- `ntp_server` (String) The actual NTP Servers IP Addresses (as Comma Separated). Default: `""`.
+- `wins_server` (String) The actual WINS Servers IP Addresses (as Coma Separated). Default: `""`.
 
 ### Read-Only
 
