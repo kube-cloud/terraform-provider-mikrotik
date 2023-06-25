@@ -20,7 +20,7 @@ jobs:
         routeros: ["6.48.3", "6.49beta54"]
         legacy_bgp_support: [true]
         include:
-          - experimental: true
+          - experimental: false
             go: 1.17
             os: ubuntu-latest
             routeros: "6.49beta54"
