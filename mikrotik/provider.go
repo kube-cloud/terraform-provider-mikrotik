@@ -93,6 +93,7 @@ func Provider(client *mt.Mikrotik) *schema.Provider {
 			"mikrotik_firewall_nat":          resourceFirewallNat(),
 			"mikrotik_firewall_mangle":       resourceFirewallMangle(),
 			"mikrotik_firewall_raw":          resourceFirewallRaw(),
+			"mikrotik_tftp":                  resourceTftp(),
 		},
 	}
 
