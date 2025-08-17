@@ -32,6 +32,11 @@ func resourceLease() *schema.Resource {
 				Required:    true,
 				Description: "The MAC addreess of the DHCP lease to be created.",
 			},
+			"server": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The DHCP Server of the DHCP lease to be created.",
+			},
 			"comment": {
 				Type:        schema.TypeString,
 				Optional:    true,

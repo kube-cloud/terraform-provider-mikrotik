@@ -15,7 +15,7 @@ func TestAccMikrotikDhcpLease_create(t *testing.T) {
 	ipAddr := internal.GetNewIpAddr()
 	macAddr := internal.GetNewMacAddr()
 	comment := acctest.RandomWithPrefix("tf-acc-comment")
-	server := "KC-IS-SRE-RUN-DEV-VL215-DHCP"
+	server := "all"
 	disabled := false
 
 	resourceName := "mikrotik_dhcp_lease.bar"
@@ -45,7 +45,7 @@ func TestAccMikrotikDhcpLease_updateLease(t *testing.T) {
 	ipAddr := internal.GetNewIpAddr()
 	updatedIpAddr := internal.GetNewIpAddr()
 	macAddr := internal.GetNewMacAddr()
-	server := "KC-IS-SRE-RUN-DEV-VL215-DHCP"
+	server := "all"
 	disabled := false
 	updatedMacAddr := internal.GetNewMacAddr()
 	comment := acctest.RandomWithPrefix("tf-acc-comment")
@@ -113,7 +113,7 @@ func TestAccMikrotikDhcpLease_import(t *testing.T) {
 	ipAddr := internal.GetNewIpAddr()
 	macAddr := internal.GetNewMacAddr()
 	comment := acctest.RandomWithPrefix("tf-acc-comment")
-	server := "KC-IS-SRE-RUN-DEV-VL215-DHCP"
+	server := "all"
 	disabled := false
 
 	resourceName := "mikrotik_dhcp_lease.bar"
