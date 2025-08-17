@@ -15,6 +15,8 @@ func TestAccMikrotikDhcpLease_create(t *testing.T) {
 	ipAddr := internal.GetNewIpAddr()
 	macAddr := internal.GetNewMacAddr()
 	comment := acctest.RandomWithPrefix("tf-acc-comment")
+	server := "all"
+	disabled := false
 
 	resourceName := "mikrotik_dhcp_lease.bar"
 	resource.ParallelTest(t, resource.TestCase{
@@ -23,7 +25,7 @@ func TestAccMikrotikDhcpLease_create(t *testing.T) {
 		CheckDestroy:      testAccCheckMikrotikDhcpLeaseDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDhcpLease(ipAddr, macAddr, comment),
+				Config: testAccDhcpLease(ipAddr, macAddr, comment, server, disabled),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpLeaseExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
@@ -41,6 +43,8 @@ func TestAccMikrotikDhcpLease_updateLease(t *testing.T) {
 	ipAddr := internal.GetNewIpAddr()
 	updatedIpAddr := internal.GetNewIpAddr()
 	macAddr := internal.GetNewMacAddr()
+	server := "all"
+	disabled := false
 	updatedMacAddr := internal.GetNewMacAddr()
 	comment := acctest.RandomWithPrefix("tf-acc-comment")
 	updatedComment := acctest.RandomWithPrefix("tf-acc-comment")
@@ -52,7 +56,7 @@ func TestAccMikrotikDhcpLease_updateLease(t *testing.T) {
 		CheckDestroy:      testAccCheckMikrotikDhcpLeaseDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDhcpLease(ipAddr, macAddr, comment),
+				Config: testAccDhcpLease(ipAddr, macAddr, comment, server, disabled),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpLeaseExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "address", ipAddr),
@@ -61,7 +65,7 @@ func TestAccMikrotikDhcpLease_updateLease(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccDhcpLease(updatedIpAddr, macAddr, comment),
+				Config: testAccDhcpLease(updatedIpAddr, macAddr, comment, server, disabled),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpLeaseExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "address", updatedIpAddr),
@@ -70,7 +74,7 @@ func TestAccMikrotikDhcpLease_updateLease(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccDhcpLease(ipAddr, macAddr, updatedComment),
+				Config: testAccDhcpLease(ipAddr, macAddr, updatedComment, server, disabled),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpLeaseExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "address", ipAddr),
@@ -79,7 +83,7 @@ func TestAccMikrotikDhcpLease_updateLease(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccDhcpLease(ipAddr, updatedMacAddr, comment),
+				Config: testAccDhcpLease(ipAddr, updatedMacAddr, comment, server, disabled),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpLeaseExists(resourceName),
 					resource.TestCheckResourceAttr(resourceName, "address", ipAddr),
@@ -105,6 +109,8 @@ func TestAccMikrotikDhcpLease_import(t *testing.T) {
 	ipAddr := internal.GetNewIpAddr()
 	macAddr := internal.GetNewMacAddr()
 	comment := acctest.RandomWithPrefix("tf-acc-comment")
+	server := "all"
+	disabled := false
 
 	resourceName := "mikrotik_dhcp_lease.bar"
 	resource.ParallelTest(t, resource.TestCase{
@@ -113,7 +119,7 @@ func TestAccMikrotikDhcpLease_import(t *testing.T) {
 		CheckDestroy:      testAccCheckMikrotikDhcpLeaseDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDhcpLease(ipAddr, macAddr, comment),
+				Config: testAccDhcpLease(ipAddr, macAddr, comment, server, disabled),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					testAccDhcpLeaseExists(resourceName),
 					resource.TestCheckResourceAttrSet(resourceName, "id")),
@@ -149,14 +155,16 @@ func TestAccMikrotikDhcpLease_createDynamicDiff(t *testing.T) {
 	})
 }
 
-func testAccDhcpLease(ipAddr, macAddr, comment string) string {
+func testAccDhcpLease(ipAddr, macAddr, comment, server string, disabled bool) string {
 	return fmt.Sprintf(`
 resource "mikrotik_dhcp_lease" "bar" {
     address = "%s"
     macaddress = "%s"
     comment = "%s"
+	disabled = %t
+	server = "%s"
 }
-`, ipAddr, macAddr, comment)
+`, ipAddr, macAddr, comment, disabled, server)
 }
 
 func testAccDhcpLeaseDynamic(ipAddr, macAddr, comment string) string {

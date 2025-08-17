@@ -8,6 +8,8 @@ resource "mikrotik_dhcp_lease" "file_server" {
   macaddress = "11:22:33:44:55:66"
   comment    = "file server"
   blocked    = "false"
+  server     = "KC-IS-SRE-RUN-DEV-VL215-DHCP",
+  disabled   = false
 }
 ```
 
@@ -25,6 +27,8 @@ resource "mikrotik_dhcp_lease" "file_server" {
 - `comment` (String) The comment of the DHCP lease to be created.
 - `dynamic` (Boolean) Whether the dhcp lease is static or dynamic. Dynamic leases are not guaranteed to continue to be assigned to that specific device. Defaults to false. Default: `false`.
 - `hostname` (String) The hostname of the device
+- `server` (String) The Target DHCP Server
+- `disabled` (Boolean) Define if Lease is Disabled or Not
 
 ### Read-Only
 
