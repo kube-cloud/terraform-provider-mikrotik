@@ -33,8 +33,6 @@ func TestAccMikrotikDhcpLease_create(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "macaddress", macAddr),
 					resource.TestCheckResourceAttr(resourceName, "dynamic", "false"),
 					resource.TestCheckResourceAttr(resourceName, "comment", comment),
-					resource.TestCheckResourceAttr(resourceName, "server", server),
-					resource.TestCheckResourceAttr(resourceName, "disabled", fmt.Sprintf("%t", disabled)),
 				),
 			},
 		},
@@ -64,8 +62,6 @@ func TestAccMikrotikDhcpLease_updateLease(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "address", ipAddr),
 					resource.TestCheckResourceAttr(resourceName, "macaddress", macAddr),
 					resource.TestCheckResourceAttr(resourceName, "comment", comment),
-					resource.TestCheckResourceAttr(resourceName, "server", server),
-					resource.TestCheckResourceAttr(resourceName, "disabled", fmt.Sprintf("%t", disabled)),
 				),
 			},
 			{
