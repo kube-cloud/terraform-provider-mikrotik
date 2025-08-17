@@ -9,10 +9,12 @@ type DhcpLease struct {
 	Id          string `mikrotik:".id"`
 	Address     string `mikrotik:"address"`
 	MacAddress  string `mikrotik:"mac-address"`
+	Server      string `mikrotik:"server"`
 	Comment     string `mikrotik:"comment"`
 	BlockAccess bool   `mikrotik:"block-access"`
+	Disabled    bool   `mikrotik:"disabled"`
 	Dynamic     bool   // TODO:  don't see this listed as a param https://wiki.mikrotik.com/wiki/Manual:IP/DHCP_Server, but our docs list it as one
-	Hostname    string
+	Hostname    string // Read-Only Field, not listed in the docs, but available in the response
 }
 
 func (client Mikrotik) AddDhcpLease(l *DhcpLease) (*DhcpLease, error) {

@@ -54,6 +54,12 @@ func resourceLease() *schema.Resource {
 				Default:     false,
 				Description: "Whether the dhcp lease is static or dynamic. Dynamic leases are not guaranteed to continue to be assigned to that specific device. Defaults to false.",
 			},
+			"disabled": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Whether the dhcp lease is disabled. Defaults to false.",
+			},
 		},
 	}
 }
@@ -129,6 +135,8 @@ func leaseToData(lease *client.DhcpLease, d *schema.ResourceData) diag.Diagnosti
 		"macaddress": lease.MacAddress,
 		"hostname":   lease.Hostname,
 		"dynamic":    lease.Dynamic,
+		"disabled":   lease.Disabled,
+		"server":     lease.Server,
 	}
 
 	d.SetId(lease.Id)
@@ -153,6 +161,8 @@ func prepareDhcpLease(d *schema.ResourceData) *client.DhcpLease {
 	lease.MacAddress = d.Get("macaddress").(string)
 	lease.Hostname = d.Get("hostname").(string)
 	lease.Dynamic = d.Get("dynamic").(bool)
+	lease.Disabled = d.Get("disabled").(bool)
+	lease.Server = d.Get("server").(string)
 
 	return lease
 }
